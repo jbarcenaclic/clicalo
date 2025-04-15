@@ -7,7 +7,12 @@ const supabase = createClient(
 )
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { action_id, duration } = req.body
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Método no permitido' });
+  }
+
+  const { valorVisible, action_id, duration } = req.body;
+
   if (!action_id) return res.status(400).json({ error: 'Missing action_id' })
 
   // Mark action as completed
@@ -23,10 +28,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     .update({ completada: true, end_time: new Date() })
     .eq('id', action_id)
 
-  if (duration !== undefined) {
-    await supabase.from('action_tracking').insert({ action_id, duration })
-  }
-
   // Check if tirada is now fully completed
   const { data: pendientes } = await supabase
     .from('acciones')
@@ -34,6 +35,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     .eq('tirada_id', action.tirada_id)
     .eq('completada', false)
 
+  if (!Array.isArray(pendientes)) {
+    return res.status(400).json({ error: 'Lista de acciones pendientes inválida o faltante' });
+  }
+  
   if (pendientes.length === 0) {
     // All actions completed → mark tirada and register payout
     const valorVisible = 0.035
@@ -44,17 +49,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .select('user_id, fecha')
       .single()
 
+    if (!tirada || !tirada.user_id || !tirada.fecha) {
+      return res.status(400).json({ error: 'Datos de tirada incompletos' });
+    }
+
+    if (duration !== undefined) {
+      await supabase.from('action_tracking').insert({ user_id: tirada.user_id, action_id, duration })
+    }
+  
     // Insert/update user_progress
     await supabase
-      .from('user_progress')
-      .upsert({
-        user_id: tirada.user_id,
-        tiradas_hoy: 1,
-        total_mes: valorVisible,
-        last_update: new Date(),
-      }, { onConflict: 'user_id' })
-      .select()
+    .from('user_progress')
+    .upsert({
+      user_id: tirada.user_id,
+      tiradas_hoy: 1,
+      total_mes: valorVisible,
+      last_update: new Date(),
+    }, { onConflict: 'user_id' })
 
+    console.log('>> Registrando earning:', {
+      user_id: tirada.user_id,
+      fecha: tirada.fecha,
+      payout: valorVisible,
+    })
+      
     // Insert/update user_earnings
     await supabase
       .from('user_earnings')

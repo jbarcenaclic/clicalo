@@ -33,8 +33,8 @@ export default function TiradaDemo() {
       setTiradaDone(true)
       setRewardVisible(true)
     } else {
-      setCurrentAction(data)
-      setMessage(`Action ${data.orden} of 3`)
+      setCurrentAction(data.action)
+      setMessage(`Action ${data.action.orden} of 3`)
     }
   }
 

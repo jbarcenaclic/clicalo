@@ -10,13 +10,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { user_id } = req.body
   if (!user_id) return res.status(400).json({ error: 'Falta user_id' })
 
-  const { data: tirada, error: tiradaError } = await supabase
-    .from('tiradas')
-    .insert({ user_id })
-    .select()
-    .single()
-
-  if (tiradaError) return res.status(500).json({ error: tiradaError.message })
+  try {
+    const { data: tirada, error: tiradaError } = await supabase
+      .from('tiradas')
+      .insert({ user_id, fecha: new Date().toISOString() })
+      .select()
+      .single();
+  
+    if (tiradaError) throw tiradaError;
+  
+    return res.status(200).json({ tirada_id: tirada.id, fecha: tirada.fecha });
+  } catch (err) {
+    console.error('Error en start-tirada:', err);
+    return res.status(500).json({ error: 'Error interno al iniciar tirada' });
+  }
 
   const acciones = [1, 2, 3].map((orden) => ({
     tirada_id: tirada.id,

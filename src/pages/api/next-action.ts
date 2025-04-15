@@ -19,7 +19,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     .limit(1)
     .single()
 
-  if (error) return res.status(404).json({ error: 'No hay acciones pendientes' })
+  if (error || !data) {
+    return res.status(200).json({ action: null })
+  }
+    
 
-  res.status(200).json(data)
+  res.status(200).json({ action: data })
+
 }
