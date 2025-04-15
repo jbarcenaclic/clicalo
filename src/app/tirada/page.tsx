@@ -26,16 +26,23 @@ export default function TiradaDemo() {
 
   const cargarSiguienteAccion = async (tirada_id: string) => {
     const res = await fetch(`/api/next-action?tirada_id=${tirada_id}`)
-    const data = await res.json()
-    if (!data?.id) {
+    if (res.status === 404) {
       setCurrentAction(null)
       setMessage('🎉 Tirada complete!')
       setTiradaDone(true)
       setRewardVisible(true)
-    } else {
-      setCurrentAction(data.action)
-      setMessage(`Action ${data.action.orden} of 3`)
+      return
     }
+    const data = await res.json()
+
+    if (!data?.id) {
+      setCurrentAction(null)
+      setMessage('⚠️ Acción no válida')
+      return
+    }
+    
+    setCurrentAction(data) // <-- ahora sí, data ya es la acción directamente
+    setMessage(`Action ${data.orden} of 3`)
   }
 
   const completarAccion = async () => {
