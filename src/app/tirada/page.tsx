@@ -17,6 +17,7 @@ export default function TiradaDemo() {
       body: JSON.stringify({ user_id: userId }),
     })
     const data = await res.json()
+    console.log('[Frontend] Acción recibida:', data)
     setTiradaId(data.tirada_id)
     setMessage('🎯 Tirada started')
     setRewardVisible(false)
@@ -35,14 +36,14 @@ export default function TiradaDemo() {
     }
     const data = await res.json()
 
-    if (!data?.id) {
+    if (!data || data.length === 0 || !data[0]?.id) {
       setCurrentAction(null)
       setMessage('⚠️ Acción no válida')
       return
     }
     
-    setCurrentAction(data) // <-- ahora sí, data ya es la acción directamente
-    setMessage(`Action ${data.orden} of 3`)
+    setCurrentAction(data[0]) 
+    setMessage(`Action ${data[0].orden} of 3`)
   }
 
   const completarAccion = async () => {
@@ -75,6 +76,10 @@ export default function TiradaDemo() {
             Start Tirada
           </button>
         </div>
+      )}
+      
+      {tiradaId && !currentAction && !tiradaDone && (
+        <p className="text-sm text-gray-500 animate-pulse">🔄 Buscando acción...</p>
       )}
 
       {tiradaId && currentAction && (

@@ -22,15 +22,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .eq('completada', false)
       .order('orden', { ascending: true })
       .limit(1)
-      .single()
 
     if (error) {
       console.error('[next-action] ❌ Error en consulta:', error.message)
-      return res.status(404).json({ error: 'No se encontró acción pendiente' })
+      return res.status(500).json({ error: 'No se encontró acción pendiente' })
     }
-    if (!data) {
-      console.warn('[next-action] ⚠️ No hay acción pendiente para esta tirada')
-      return res.status(404).json({ error: 'No hay acción pendiente' })
+    if (!data || data.length === 0) {
+      console.log('[next-action] ✅ No hay acciones pendientes.')
+      return res.status(404).json({ error: 'No hay acciones pendientes' })
     }
     console.log('[next-action] ✅ Acción pendiente encontrada:', data)
     return res.status(200).json(data)
