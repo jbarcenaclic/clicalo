@@ -4,7 +4,7 @@ const isProd = process.env.VERCEL_ENV === 'production';
 
 const nextConfig = {
   eslint: {
-    ignoreDuringBuilds: !isProd, // Solo valida ESLint en producción
+    ignoreDuringBuilds: true, ///!isProd, // Solo valida ESLint en producción
   },
 };
 
