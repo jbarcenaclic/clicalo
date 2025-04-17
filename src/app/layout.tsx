@@ -36,6 +36,31 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            const vapidKey = '${process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY}';
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.register('/service-worker.js').then(async reg => {
+                console.log('✅ Service Worker listo');
+
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                  const subscription = await reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: vapidKey
+                  });
+
+                  // Guardar en tu backend
+                  await fetch('/api/save-subscription', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(subscription)
+                  });
+                }
+              });
+            }
+          `
+        }} />
       </body>
     </html>
   );
