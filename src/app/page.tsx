@@ -6,7 +6,6 @@ import PrimaryButton from '@/components/PrimaryButton'
 export default function Home() {
   return (
     <Layout>
-      <h1 className="text-4xl font-bold text-center mb-2">CLÍCALO</h1>
       <p className="text-xl mb-6 text-center font-light tracking-wide">
         Microeconomía digital participativa para LATAM
       </p>
@@ -24,9 +23,10 @@ export default function Home() {
       <section className="text-center">
         <p className="mb-2 text-lg text-clicalo-grisTexto">+1,000 usuarios registrados</p>
         <p className="mb-6 text-lg text-clicalo-grisTexto">85% tasa de finalización · $0.045 USD por acción</p>
-        <Link href="https://wa.me/5215555555555?text=Hola!%20Quiero%20más%20información%20sobre%20CLÍCALO" target="_blank">
-          <PrimaryButton>Solicita acceso privado</PrimaryButton>
+        <Link href="/tirada">
+          <PrimaryButton>Iniciar ahora</PrimaryButton>
         </Link>
+
       </section>
     </Layout>
   )

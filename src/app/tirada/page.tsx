@@ -4,7 +4,7 @@ import Layout from '@/components/Layout'
 import PrimaryButton from '@/components/PrimaryButton'
 
 export default function TiradaDemo() {
-  const [userId, setUserId] = useState('')
+  const [phone, setPhone] = useState('')
   const [tiradaId, setTiradaId] = useState('')
   const [currentAction, setCurrentAction] = useState<any>(null)
   const [message, setMessage] = useState('')
@@ -16,7 +16,7 @@ export default function TiradaDemo() {
     const res = await fetch('/api/start-tirada', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: userId }),
+      body: JSON.stringify({ phone }),
     })
     const data = await res.json()
     console.log('[Frontend] Acción recibida:', data)
@@ -64,13 +64,13 @@ export default function TiradaDemo() {
 
       {!tiradaId && (
         <div className="flex flex-col sm:flex-row gap-2 mb-6">
-          <input
-            type="text"
-            placeholder="Tu ID de Supabase"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            className="border p-2 rounded w-64 text-black"
-          />
+        <input
+          type="tel"
+          placeholder="Tu número (ej: +525234567890)"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className="border p-2 rounded w-64 text-black"
+        />
           <PrimaryButton onClick={iniciarTirada}>Start Tirada</PrimaryButton>
         </div>
       )}
