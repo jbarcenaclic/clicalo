@@ -1,11 +1,12 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
-  content: [
-    './src/**/*.{js,ts,jsx,tsx}',
-  ],
+  content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+      },
       colors: {
         clicalo: {
           azul: '#0052A4',
@@ -14,9 +15,7 @@ const config: Config = {
           grisTexto: '#E5E5E5',
         },
       },
-      fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-      },    },
+    },
   },
   plugins: [],
 }

@@ -1,10 +1,7 @@
-@import "tailwindcss";
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-  @apply bg-clicalo-azul text-white;
-  font-family: 'Inter', sans-serif;
+  @apply font-sans bg-clicalo-azul text-white;
 }
