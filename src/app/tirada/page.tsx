@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import Layout from '@/components/Layout'
+import PrimaryButton from '@/components/PrimaryButton'
 
 export default function TiradaDemo() {
   const [userId, setUserId] = useState('')
@@ -41,8 +43,8 @@ export default function TiradaDemo() {
       setMessage('⚠️ Acción no válida')
       return
     }
-    
-    setCurrentAction(data[0]) 
+
+    setCurrentAction(data[0])
     setMessage(`Action ${data[0].orden} of 3`)
   }
 
@@ -57,66 +59,53 @@ export default function TiradaDemo() {
   }
 
   return (
-    <div className="min-h-screen p-4 bg-gradient-to-br from-gray-100 to-blue-100 flex flex-col items-center justify-center text-center">
-      <h1 className="text-2xl font-bold mb-6">🎮 CLÍCALO Tirada Demo</h1>
+    <Layout>
+      <h1 className="text-2xl font-bold mb-6 text-center">🎮 CLÍCALO Tirada Demo</h1>
 
       {!tiradaId && (
-        <div className="flex gap-2 mb-6">
+        <div className="flex flex-col sm:flex-row gap-2 mb-6">
           <input
             type="text"
-            placeholder="Your Supabase User ID"
+            placeholder="Tu ID de Supabase"
             value={userId}
             onChange={(e) => setUserId(e.target.value)}
-            className="border p-2 rounded w-64"
+            className="border p-2 rounded w-64 text-black"
           />
-          <button
-            onClick={iniciarTirada}
-            className="bg-blue-600 text-white px-4 py-2 rounded"
-          >
-            Start Tirada
-          </button>
+          <PrimaryButton onClick={iniciarTirada}>Start Tirada</PrimaryButton>
         </div>
       )}
-      
+
       {tiradaId && !currentAction && !tiradaDone && (
-        <p className="text-sm text-gray-500 animate-pulse">🔄 Buscando acción...</p>
+        <p className="text-sm text-clicalo-grisTexto animate-pulse">🔄 Buscando acción...</p>
       )}
 
       {tiradaId && currentAction && (
         <div className="flex flex-col items-center gap-4">
-          <div className="p-4 border bg-white shadow rounded">
-            <p className="text-xl">🔹 Action #{currentAction.orden}</p>
-            <p className="text-sm text-gray-500">(type: {currentAction.tipo})</p>
+          <div className="p-4 border bg-white shadow rounded text-clicalo-azul w-full max-w-md">
+            <p className="text-xl font-semibold">🔹 Action #{currentAction.orden}</p>
+            <p className="text-sm text-clicalo-grisTexto">(type: {currentAction.tipo})</p>
           </div>
-          <button
-            onClick={completarAccion}
-            className="bg-green-600 text-white px-6 py-2 rounded"
-          >
-            Complete Action
-          </button>
+          <PrimaryButton onClick={completarAccion}>Complete Action</PrimaryButton>
         </div>
       )}
 
       {tiradaDone && rewardVisible && (
-        <div className="mt-8 p-6 bg-white shadow-xl rounded-lg border border-green-300 animate-pulse">
+        <div className="mt-8 p-6 bg-white shadow-xl rounded-lg border border-green-300 animate-pulse text-center text-clicalo-azul max-w-md">
           <h2 className="text-3xl font-bold text-green-700 mb-2">🎉 Reward Unlocked!</h2>
           <p className="text-xl mb-4">You earned <strong>${rewardValue.toFixed(3)}</strong> for this tirada.</p>
           <p className="text-sm text-gray-600">Daily and monthly totals will be shown here soon.</p>
-          <button
-            onClick={() => {
-              setTiradaId('')
-              setCurrentAction(null)
-              setMessage('')
-              setRewardVisible(false)
-            }}
-            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
-          >
+          <PrimaryButton onClick={() => {
+            setTiradaId('')
+            setCurrentAction(null)
+            setMessage('')
+            setRewardVisible(false)
+          }}>
             Start New Tirada
-          </button>
+          </PrimaryButton>
         </div>
       )}
 
-      {message && <p className="mt-6 text-lg text-indigo-700">{message}</p>}
-    </div>
+      {message && <p className="mt-6 text-lg text-clicalo-grisTexto">{message}</p>}
+    </Layout>
   )
 }
