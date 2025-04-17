@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import Layout from '@/components/Layout'
 import PrimaryButton from '@/components/PrimaryButton'
 
