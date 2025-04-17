@@ -2,6 +2,7 @@
 import Layout from '@/components/Layout'
 import Link from 'next/link'
 import PrimaryButton from '@/components/PrimaryButton'
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export default function Home() {
   return (
