@@ -1,112 +1,166 @@
 'use client'
-import { useState } from 'react'
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { useEffect, useState } from 'react'
 import Layout from '@/components/Layout'
 import PrimaryButton from '@/components/PrimaryButton'
 
-export default function TiradaDemo() {
-  const [phone, setPhone] = useState('')
-  const [tiradaId, setTiradaId] = useState('')
-  const [currentAction, setCurrentAction] = useState<any>(null)
+type Action = {
+  id: string
+  orden: number
+  tipo: string
+}
+
+export default function TiradaPage() {
+  const [userId, setUserId] = useState<string | null>(null)
+  const [tiradaId, setTiradaId] = useState<string | null>(null)
+  const [currentAction, setCurrentAction] = useState<Action | null>(null)
   const [message, setMessage] = useState('')
   const [tiradaDone, setTiradaDone] = useState(false)
   const [rewardVisible, setRewardVisible] = useState(false)
   const [rewardValue, setRewardValue] = useState(0.035)
+  const [transitioning, setTransitioning] = useState(false)
+  const [phone, setPhone] = useState<string | null>(null)
 
-  const iniciarTirada = async () => {
+
+  useEffect(() => {
+    let mounted = true
+  
+    const iniciar = async () => {
+      const uid = localStorage.getItem('user_id')
+      if (!uid) {
+        window.location.href = '/'
+        return
+      }
+  
+      console.log('[tirada] intentando iniciar con user_id:', uid)
+  
+      if (mounted) {
+        setUserId(uid)
+        iniciarTirada(uid)
+      }
+    }
+  
+    iniciar()
+  
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  const iniciarTirada = async (uid: string) => {
     const res = await fetch('/api/start-tirada', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone }),
+      body: JSON.stringify({ user_id: uid }),
     })
+  
     const data = await res.json()
-    console.log('[Frontend] Acción recibida:', data)
+    console.log('[tirada] respuesta de start-tirada:', data)
+  
+    if (!res.ok) {
+      console.error('[tirada] error al iniciar tirada:', data?.error)
+      return
+    }
+  
     setTiradaId(data.tirada_id)
-    setMessage('🎯 Tirada started')
-    setRewardVisible(false)
-    setTiradaDone(false)
     cargarSiguienteAccion(data.tirada_id)
   }
 
-  const cargarSiguienteAccion = async (tirada_id: string) => {
-    const res = await fetch(`/api/next-action?tirada_id=${tirada_id}`)
-    if (res.status === 404) {
+  const cargarSiguienteAccion = async (tid: string) => {
+    console.log('[tirada] solicitando siguiente acción para:', tid)
+    const res = await fetch(`/api/next-action?tirada_id=${tid}`)
+    const json = await res.json()
+    console.log('[tirada] respuesta JSON completa:', json)
+  
+    const { action } = json
+  
+    if (!action) {
       setCurrentAction(null)
-      setMessage('🎉 Tirada complete!')
       setTiradaDone(true)
       setRewardVisible(true)
-      return
+    } else {
+      console.log('[tirada] ✅ Acción encontrada:', action)
+      setCurrentAction(action)
+      setMessage(`✅ Acción ${action.orden} de 3 completada`)
     }
-    const data = await res.json()
-
-    if (!data || data.length === 0 || !data[0]?.id) {
-      setCurrentAction(null)
-      setMessage('⚠️ Acción no válida')
-      return
-    }
-
-    setCurrentAction(data[0])
-    setMessage(`Action ${data[0].orden} of 3`)
   }
 
   const completarAccion = async () => {
     if (!currentAction) return
+    setTransitioning(true)
+  
     await fetch('/api/complete-action', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action_id: currentAction.id, duration: 5 }),
+      body: JSON.stringify({
+        action_id: currentAction.id,
+        duration: 5,
+      }),
     })
-    cargarSiguienteAccion(tiradaId)
+  
+    // Mostrar transición 1.5s
+    setTimeout(() => {
+      setTransitioning(false)
+      cargarSiguienteAccion(tiradaId!)
+    }, 1500)
   }
+  
 
   return (
     <Layout>
-      <h1 className="text-2xl font-bold mb-6 text-center">🎮 CLÍCALO Tirada Demo</h1>
+      <div className="max-w-md mx-auto text-center p-6">
+        <h1 className="text-2xl font-bold mb-4">🎮 Tirada del día</h1>
 
-      {!tiradaId && (
-        <div className="flex flex-col sm:flex-row gap-2 mb-6">
-        <input
-          type="tel"
-          placeholder="Tu número (ej: +525234567890)"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="border p-2 rounded w-64 text-black"
-        />
-          <PrimaryButton onClick={iniciarTirada}>Start Tirada</PrimaryButton>
-        </div>
-      )}
-
-      {tiradaId && !currentAction && !tiradaDone && (
-        <p className="text-sm text-clicalo-grisTexto animate-pulse">🔄 Buscando acción...</p>
-      )}
-
-      {tiradaId && currentAction && (
-        <div className="flex flex-col items-center gap-4">
-          <div className="p-4 border bg-white shadow rounded text-clicalo-azul w-full max-w-md">
-            <p className="text-xl font-semibold">🔹 Action #{currentAction.orden}</p>
-            <p className="text-sm text-clicalo-grisTexto">(type: {currentAction.tipo})</p>
+        {!tiradaDone && currentAction && !transitioning && (
+          <div className="mb-6">
+            <p className="text-lg font-medium text-clicalo-azul mb-2">
+              Acción {currentAction.orden} de 3
+            </p>
+            <div className="flex gap-2 justify-center">
+              {[1, 2, 3].map((step) => (
+                <div
+                  key={step}
+                  className={`h-2 rounded-full transition-all duration-300 w-20 ${
+                    step <= currentAction.orden ? 'bg-green-500' : 'bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
           </div>
-          <PrimaryButton onClick={completarAccion}>Complete Action</PrimaryButton>
-        </div>
-      )}
+        )}
+        {transitioning && (
+          <div className="flex flex-col items-center gap-4 mt-8 text-white animate-pulse">
+            <p className="text-xl font-bold text-green-300">✅ ¡Acción completada!</p>
+            <p className="text-sm text-white/70">Preparando la siguiente acción...</p>
+            <div className="text-4xl animate-bounce">🎯</div>
+          </div>
+        )}
 
-      {tiradaDone && rewardVisible && (
-        <div className="mt-8 p-6 bg-white shadow-xl rounded-lg border border-green-300 animate-pulse text-center text-clicalo-azul max-w-md">
-          <h2 className="text-3xl font-bold text-green-700 mb-2">🎉 Reward Unlocked!</h2>
-          <p className="text-xl mb-4">You earned <strong>${rewardValue.toFixed(3)}</strong> for this tirada.</p>
-          <p className="text-sm text-gray-600">Daily and monthly totals will be shown here soon.</p>
-          <PrimaryButton onClick={() => {
-            setTiradaId('')
-            setCurrentAction(null)
-            setMessage('')
-            setRewardVisible(false)
-          }}>
-            Start New Tirada
-          </PrimaryButton>
-        </div>
-      )}
 
-      {message && <p className="mt-6 text-lg text-clicalo-grisTexto">{message}</p>}
+
+        {!tiradaDone && currentAction && (
+          <>
+            <div className="p-4 bg-white rounded shadow mb-4">
+              <p className="text-xl font-bold text-clicalo-azul">🔹 Acción {currentAction.orden}</p>
+              <p className="text-gray-600 text-sm">(tipo: {currentAction.tipo})</p>
+            </div>
+            <PrimaryButton onClick={completarAccion}>
+              ✅ Completar acción
+            </PrimaryButton>
+          </>
+        )}
+
+        {tiradaDone && rewardVisible && (
+          <div className="mt-8 p-6 bg-white shadow-xl rounded-lg border border-green-300 text-center text-clicalo-azul">
+            <h2 className="text-3xl font-bold text-green-700 mb-2">🎉 ¡Tirada completada!</h2>
+            <p className="text-xl mb-4">Ganaste <strong>${rewardValue.toFixed(3)}</strong></p>
+            <PrimaryButton onClick={() => window.location.href = '/tirada'}>
+              Volver al dashboard
+            </PrimaryButton>
+          </div>
+        )}
+
+        {message && !tiradaDone && <p className="mt-6 text-white bg-green-600 inline-block px-4 py-2 rounded shadow font-semibold">{message}</p>}
+      </div>
     </Layout>
   )
 }

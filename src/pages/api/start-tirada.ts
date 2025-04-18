@@ -7,50 +7,18 @@ const supabase = createClient(
 )
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { phone } = req.body
-  console.log('[START] start-tirada.ts llamado con:', phone)
+  const { user_id } = req.body
+  console.log('[START] start-tirada.ts llamado con user_id:', user_id)
 
-  if (!phone) {
-    console.log('[ERROR] Teléfono no proporcionado.')
-    return res.status(400).json({ error: 'Missing phone number' })
-  }
-
-  // Buscar usuario
-  console.log('[INFO] Buscando usuario por teléfono...')
-  let { data: user, error: findError } = await supabase
-    .from('users')
-    .select('id')
-    .eq('phone', phone)
-    .single()
-
-  if (findError) {
-    console.log('[INFO] Usuario no encontrado. Se intentará crear uno nuevo.')
-  } else {
-    console.log('[OK] Usuario encontrado:', user?.id)
-  }
-
-  // Crear usuario si no existe
-  if (!user) {
-    const { data: newUser, error: insertError } = await supabase
-      .from('users')
-      .insert({ phone })
-      .select('id')
-      .single()
-
-    if (insertError || !newUser) {
-      console.error('[ERROR] No se pudo crear el usuario:', insertError?.message)
-      return res.status(500).json({ error: 'Could not create user' })
-    }
-
-    user = newUser
-    console.log('[OK] Usuario nuevo creado con ID:', user.id)
+  if (!user_id) {
+    console.log('[ERROR] user_id no proporcionado.')
+    return res.status(400).json({ error: 'Missing user_id' })
   }
 
   // Crear tirada
-  console.log('[INFO] Creando tirada...')
   const { data: tirada, error: tiradaError } = await supabase
     .from('tiradas')
-    .insert({ user_id: user.id })
+    .insert({ user_id })
     .select()
     .single()
 
@@ -69,7 +37,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     completada: false,
   }))
 
-  console.log('[INFO] Insertando acciones dummy...')
   const { error: accionesError } = await supabase.from('acciones').insert(acciones)
 
   if (accionesError) {
@@ -77,6 +44,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ error: accionesError.message })
   }
 
-  console.log('[OK] Acciones insertadas correctamente.')
+  console.log('[OK] Acciones insertadas correctamente para tirada:', tirada.id)
   res.status(200).json({ tirada_id: tirada.id })
 }
