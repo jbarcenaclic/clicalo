@@ -1,17 +1,18 @@
-'use client'
+// src/components/DashboardRuta.tsx
+
 import { motion } from 'framer-motion'
 
-export default function DashboardRuta({
-  tiradasCompletadas = 4,
-  accionesEnCurso = 1,
+export function DashboardRuta({
+  tiradasCompletadas = 0,
+  accionesEnCurso = 0,
 }: {
   tiradasCompletadas: number
   accionesEnCurso: number
 }) {
+  console.log('[DashboardRuta] tiradasCompletadas:', tiradasCompletadas, 'accionesEnCurso:', accionesEnCurso)
   const bloques = Array.from({ length: 10 }, (_, i) => {
     const esCompletado = i < tiradasCompletadas
     const esActivo = i === tiradasCompletadas
-
     return (
       <motion.div
         key={i}
