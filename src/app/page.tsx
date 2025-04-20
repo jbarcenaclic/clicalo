@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import Layout from '@/components/Layout'
+import PageContainer from '@/components/PageContainer'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import PrimaryButton from '@/components/PrimaryButton'
@@ -44,7 +44,7 @@ export default function Home() {
   }
 
   return (
-    <Layout>
+    <PageContainer>
       <p className="text-xl mb-6 text-center font-light tracking-wide">
         Microeconomía digital participativa para LATAM
       </p>
@@ -86,6 +86,6 @@ export default function Home() {
           </Link>
         </section>
       )}
-    </Layout>
+    </PageContainer>
   )
 }

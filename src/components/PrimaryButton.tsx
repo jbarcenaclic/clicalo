@@ -1,3 +1,4 @@
+// src/components/PrimaryButton.tsx
 'use client'
 export default function PrimaryButton({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (

@@ -1,8 +1,10 @@
+// tirada/page.tsx
 'use client'
 import { useEffect, useState } from 'react'
-import Layout from '@/components/Layout'
+import PageContainer from '@/components/PageContainer'
 import PrimaryButton from '@/components/PrimaryButton'
 import { DashboardRuta } from '@/components/DashboardRuta'
+import PushSubscription from '@/components/PushSubscription'
 
 
 type Action = {
@@ -122,49 +124,50 @@ export default function TiradaPage() {
   const tiradasRestantes = progreso.tiradasCompletadas < 10
 
   return (
-    <Layout>
-      <div className="max-w-md mx-auto text-center p-6">
-      <div className="mb-6">
-        <h1 className="text-xl font-bold text-center text-white mb-2">🎯 Tu progreso diario</h1>
-        <DashboardRuta
-          tiradasCompletadas={progreso.tiradasCompletadas}
-          accionesEnCurso={progreso.accionesEnCurso}
-        />
+    <PageContainer>
+      <PushSubscription />
+        <div className="max-w-md mx-auto text-center p-6">
+        <div className="mb-6">
+          <h1 className="text-xl font-bold text-center text-white mb-2">🎯 Tu progreso diario</h1>
+          <DashboardRuta
+            tiradasCompletadas={progreso.tiradasCompletadas}
+            accionesEnCurso={progreso.accionesEnCurso}
+          />
 
-      </div>
-
-        {tiradasRestantes && transitioning && (
-          <div className="flex flex-col items-center gap-4 mt-8 text-white animate-pulse">
-            <p className="text-xl font-bold text-green-300">✅ ¡Acción completada!</p>
-            <p className="text-sm text-white/70">Preparando la siguiente acción...</p>
-            <div className="text-4xl animate-bounce">🎯</div>
-          </div>
-        )}
-
-        {tiradasRestantes && !tiradaDone && currentAction && (
-          <>
-            <div className="p-4 bg-white rounded shadow mb-4">
-              <p className="text-xl font-bold text-clicalo-azul">🔹 Acción {currentAction.orden}</p>
-              <p className="text-gray-600 text-sm">(tipo: {currentAction.tipo})</p>
-            </div>
-            <PrimaryButton onClick={completarAccion}>
-              ✅ Completar acción
-            </PrimaryButton>
-          </>
-        )}
-
-        {!tiradasRestantes && (
-          <div className="mt-8 p-6 bg-white shadow-xl rounded-lg border border-green-300 text-center text-clicalo-azul">
-          <h2 className="text-3xl font-bold text-green-700 mb-2">🎉 ¡Meta diaria alcanzada!</h2>
-          <p className="text-xl mb-4">Ganaste <strong>${(rewardValue * 10).toFixed(3)}</strong></p>
-          <PrimaryButton onClick={() => window.location.href = '/'}>
-            Volver al dashboard
-          </PrimaryButton>
         </div>
-        )}
 
-        {message && tiradasRestantes && !tiradaDone && <p className="mt-6 text-white bg-green-600 inline-block px-4 py-2 rounded shadow font-semibold">{message}</p>}
-      </div>
-    </Layout>
+          {tiradasRestantes && transitioning && (
+            <div className="flex flex-col items-center gap-4 mt-8 text-white animate-pulse">
+              <p className="text-xl font-bold text-green-300">✅ ¡Acción completada!</p>
+              <p className="text-sm text-white/70">Preparando la siguiente acción...</p>
+              <div className="text-4xl animate-bounce">🎯</div>
+            </div>
+          )}
+
+          {tiradasRestantes && !tiradaDone && currentAction && (
+            <>
+              <div className="p-4 bg-white rounded shadow mb-4">
+                <p className="text-xl font-bold text-clicalo-azul">🔹 Acción {currentAction.orden}</p>
+                <p className="text-gray-600 text-sm">(tipo: {currentAction.tipo})</p>
+              </div>
+              <PrimaryButton onClick={completarAccion}>
+                ✅ Completar acción
+              </PrimaryButton>
+            </>
+          )}
+
+          {!tiradasRestantes && (
+            <div className="mt-8 p-6 bg-white shadow-xl rounded-lg border border-green-300 text-center text-clicalo-azul">
+            <h2 className="text-3xl font-bold text-green-700 mb-2">🎉 ¡Meta diaria alcanzada!</h2>
+            <p className="text-xl mb-4">Ganaste <strong>${(rewardValue * 10).toFixed(3)}</strong></p>
+            <PrimaryButton onClick={() => window.location.href = '/'}>
+              Volver al dashboard
+            </PrimaryButton>
+          </div>
+          )}
+
+          {message && tiradasRestantes && !tiradaDone && <p className="mt-6 text-white bg-green-600 inline-block px-4 py-2 rounded shadow font-semibold">{message}</p>}
+        </div>
+    </PageContainer>
   )
 }

@@ -1,29 +1,31 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+// src/app/api/save-subscription/route.ts
+import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { NextResponse } from 'next/server'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+export async function POST(req: Request) {
+  const supabase = await createSupabaseServerClient()
 
-export async function POST(req: NextRequest) {
-  const subscription = await req.json()
-
-  const { endpoint, keys } = subscription
-
-  // opcional: puedes ligarlo a user_id si estás autenticando
-  const user_id = null
-
-  const { error } = await supabase.from('push_subscriptions').insert({
-    endpoint,
-    keys,
-    user_id,
-  })
-
-  if (error) {
-    console.error('[❌] Error saving subscription:', error.message)
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 })
+  const { data: { user }, error } = await supabase.auth.getUser()
+  if (!user || error) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   }
 
-  return NextResponse.json({ success: true })
+  const body = await req.json()
+  const { endpoint, keys } = body
+
+  const { data: existing } = await supabase
+    .from('push_subscriptions')
+    .select('id')
+    .eq('endpoint', endpoint)
+    .maybeSingle()
+
+  if (!existing) {
+    await supabase.from('push_subscriptions').insert({
+      endpoint,
+      keys,
+      user_id: user.id
+    })
+  }
+
+  return NextResponse.json({ ok: true })
 }

@@ -1,67 +1,30 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+// src/app/layout.tsx
+import './globals.css'
+import { cookies } from 'next/headers'
+import { createServerClient } from '@supabase/ssr'
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: cookies() as any // 👈 elimina errores de tipo y funciona perfecto
+    }
+  )
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+  const { data: { user } } = await supabase.auth.getUser()
 
-export const metadata: Metadata = {
-  title: "CLÍCALO – Plataforma de Recompensas",
-  description: "Gana dinero real con tiradas diarias desde tu celular.",
-  icons: {
-    icon: "/favicon.ico",
-  },
-};
-
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="es">
+      <body>
+        <header className="p-4 bg-zinc-900 text-white flex justify-between items-center">
+          <span>🚀 CLÍCALO</span>
+          <span className="text-sm">
+            {user?.id ? '🔓 Loggeado' : '🔒 No loggeado'}
+          </span>
+        </header>
         {children}
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            const vapidKey = '${process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY}';
-            if ('serviceWorker' in navigator) {
-              navigator.serviceWorker.register('/service-worker.js').then(async reg => {
-                console.log('✅ Service Worker listo');
-
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                  const subscription = await reg.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: vapidKey
-                  });
-
-                  // Guardar en tu backend
-                  await fetch('/api/save-subscription', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(subscription)
-                  });
-                }
-              });
-            }
-          `
-        }} />
       </body>
     </html>
-  );
+  )
 }

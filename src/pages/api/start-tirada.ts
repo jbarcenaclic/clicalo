@@ -15,6 +15,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Missing user_id' })
   }
 
+  // Paso 1: Obtener tirada activa existente para hoy
+  const hoy = new Date().toISOString().split('T')[0]
+
+  const { data: tiradaExistente } = await supabase
+    .from('tiradas')
+    .select('id')
+    .eq('user_id', user_id)
+    .eq('fecha', hoy)
+    .eq('completada', false)
+    .limit(1)
+    .single()
+
+  // Si ya existe una, devuélvela directamente
+  if (tiradaExistente) {
+    console.log('[OK] Tirada existente encontrada:', tiradaExistente.id)
+    return res.status(200).json({ tirada_id: tiradaExistente.id })
+  }
+  console.log('[OK] No se encontró tirada existente, creando una nueva...')
   // Crear tirada
   const { data: tirada, error: tiradaError } = await supabase
     .from('tiradas')

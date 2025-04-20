@@ -1,15 +1,18 @@
 // src/components/DashboardRuta.tsx
 
 import { motion } from 'framer-motion'
+import { useEffect, memo } from 'react'
 
-export function DashboardRuta({
+function DashboardRutaComponent({
   tiradasCompletadas = 0,
   accionesEnCurso = 0,
 }: {
   tiradasCompletadas: number
   accionesEnCurso: number
 }) {
-  console.log('[DashboardRuta] tiradasCompletadas:', tiradasCompletadas, 'accionesEnCurso:', accionesEnCurso)
+  useEffect(() => {
+    console.log('[DashboardRuta] tiradasCompletadas:', tiradasCompletadas, 'accionesEnCurso:', accionesEnCurso)
+  }, [tiradasCompletadas, accionesEnCurso])
   const bloques = Array.from({ length: 10 }, (_, i) => {
     const esCompletado = i < tiradasCompletadas
     const esActivo = i === tiradasCompletadas
@@ -52,3 +55,4 @@ export function DashboardRuta({
     </div>
   )
 }
+export const DashboardRuta = memo(DashboardRutaComponent)
