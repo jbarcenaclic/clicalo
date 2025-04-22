@@ -1,17 +1,26 @@
 // next.config.js
-import type { NextConfig } from "next";
-
-const isProd = process.env.VERCEL_ENV === 'production';
-
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true, ///!isProd, // Solo valida ESLint en producción
-  },
+  reactStrictMode: true,
+
   experimental: {
-    middlewarePrefetch: true, // solo si quieres prefetch
+    serverActions: {},
+    middlewarePrefetch: 'flexible',
+    typedRoutes: true,
   },
-};
 
-export default nextConfig;
+  eslint: {
+    ignoreDuringBuilds: true, //!isProd, // evita errores de lint en build de producción
+  },
 
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
+  },
+}
 
+module.exports = nextConfig

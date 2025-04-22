@@ -7,9 +7,9 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, // ✅ Aquí usamos la clave pública
     {
-      cookies: cookies() as any // 👈 elimina errores de tipo y funciona perfecto
+      cookies: cookies() as any
     }
   )
 
