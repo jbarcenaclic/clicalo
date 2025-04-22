@@ -2,6 +2,7 @@
 import './globals.css'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const supabase = createServerClient(

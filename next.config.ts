@@ -8,4 +8,10 @@ const nextConfig = {
   },
 };
 
+module.exports = {
+  experimental: {
+    middlewarePrefetch: true, // solo si quieres prefetch
+  },
+}
+
 export default nextConfig;
