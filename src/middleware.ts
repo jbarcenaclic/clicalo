@@ -2,9 +2,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  // Captura el OPTIONS / que lanza 400
   if (request.method === 'OPTIONS' && request.nextUrl.pathname === '/') {
-    console.log('🛡️ Middleware: Interceptado OPTIONS /')
+    const forwarded = request.headers.get('x-forwarded-for')
+    const ip = forwarded?.split(',')[0]?.trim() ?? 'IP desconocida'
+
+    console.log('🕵️ Interceptado OPTIONS', {
+      path: request.nextUrl.pathname,
+      headers: Object.fromEntries(request.headers.entries()),
+      ip,
+    })
 
     return new NextResponse(null, {
       status: 204,
@@ -18,3 +24,4 @@ export function middleware(request: NextRequest) {
 
   return NextResponse.next()
 }
+
