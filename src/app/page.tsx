@@ -1,3 +1,4 @@
+// src/app/page.tsx
 'use client'
 import { useEffect, useState } from 'react'
 import PageContainer from '@/components/PageContainer'
@@ -5,19 +6,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import PrimaryButton from '@/components/PrimaryButton'
 import { SpeedInsights } from "@vercel/speed-insights/next"
-
-export function OPTIONS() {
-  console.log('🔥 OPTIONS / triggered')
-  return new Response(null, {
-    status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    },
-  })
-}
-
 
 export default function Home() {
   const [phone, setPhone] = useState('')
