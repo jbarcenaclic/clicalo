@@ -1,4 +1,4 @@
-//api/user-progress/route.ts
+// app/api/user-progress/route.ts
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { toZonedTime, format } from 'date-fns-tz'
@@ -33,6 +33,7 @@ export async function GET(req: Request) {
   const zonedDate = toZonedTime(ahora, timezone)
   const fechaLocal = format(zonedDate, 'yyyy-MM-dd')
   
+  console.log('[user-progress] fecha local:', fechaLocal)
   // Obtener tiradas del día
   const { data: tiradas } = await supabase
     .from('tiradas')
@@ -42,17 +43,18 @@ export async function GET(req: Request) {
 
   // IDs de tiradas del día
   const tiradasIds = tiradas?.map(t => t.id) || []
-
+  console.log('[user-progress] tiradas del día:', tiradasIds)
   // Acciones por tirada
   const { data: acciones } = await supabase
     .from('acciones')
     .select('tirada_id, completada')
 
   const accionesPorTirada = new Map<string, boolean[]>()
+  console.log('[user-progress] acciones:', acciones)
 
   // Agrupar acciones por tirada
 
-  for (const accion of acciones || []) {
+    for (const accion of acciones || []) {
     if (!accionesPorTirada.has(accion.tirada_id)) {
       accionesPorTirada.set(accion.tirada_id, [])
     }
