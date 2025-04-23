@@ -14,7 +14,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   )
 
   const { data: { user } } = await supabase.auth.getUser()
-  console.log('user', user)
+  console.log('user:', user)
 
   return (
     <html lang="es">

@@ -1,28 +1,25 @@
-'use client'
-import { useEffect, useState } from 'react'
-import { DashboardRuta } from '@/components/DashboardRuta'
+// src/app/dashboard/page.tsx
+// src/app/dashboard/page.tsx
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { createServerClient } from '@supabase/ssr'
 
+export default async function DashboardPage() {
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { cookies: cookies() as any }
+  )
 
-export default function DashboardPage() {
-  const [tiradas, setTiradas] = useState(0)
-  const [acciones, setAcciones] = useState(0)
+  const { data: { user } } = await supabase.auth.getUser()
 
-  useEffect(() => {
-    const phone = localStorage.getItem('phone')
-    if (!phone) return
-    const encodedPhone = encodeURIComponent(phone)
-    fetch(`/api/user-progress?phone=${encodedPhone}`)
-      .then(res => res.json())
-      .then(data => {
-        setTiradas(data.tiradasCompletadas || 0)
-        setAcciones(data.accionesEnCurso || 0)
-      })
-  }, [])
+  if (!user) {
+    redirect('/login')
+  }
 
   return (
-    <div className="p-4 text-white">
-      <h1 className="text-2xl font-bold mb-2">🎯 Tu progreso diario</h1>
-      <DashboardRuta tiradasCompletadas={tiradas} accionesEnCurso={acciones} />
-    </div>
+    <main className="p-4">
+      <h1 className="text-2xl">🎉 Bienvenido, estás loggeado</h1>
+    </main>
   )
 }
