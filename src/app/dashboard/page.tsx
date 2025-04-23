@@ -1,5 +1,5 @@
-// src/app/dashboard/page.tsx
-// src/app/dashboard/page.tsx
+// app/dashboard/page.tsx
+import LogoutButton from '@/components/LogoutButton'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createServerClient } from '@supabase/ssr'
@@ -13,13 +13,12 @@ export default async function DashboardPage() {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) {
-    redirect('/login')
-  }
+  if (!user) redirect('/login')
 
   return (
-    <main className="p-4">
-      <h1 className="text-2xl">🎉 Bienvenido, estás loggeado</h1>
-    </main>
+    <div className="p-4">
+      <h1 className="text-2xl mb-2">Bienvenido, {user.email}</h1>
+      <LogoutButton />
+    </div>
   )
 }

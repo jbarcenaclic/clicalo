@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
-import AuthPhone from '@/components/AuthPhone'
+import AuthEmail from '@/components/AuthEmail'
 
 export default async function LoginPage() {
   const supabase = createServerClient(
@@ -23,7 +23,7 @@ export default async function LoginPage() {
 
   return (
     <div className="h-screen flex items-center justify-center bg-blue-50">
-      <AuthPhone />
+      <AuthEmail />
     </div>
   )
 }
