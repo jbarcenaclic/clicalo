@@ -35,47 +35,47 @@ export async function GET(req: Request) {
   
   console.log('[user-progress] fecha local:', fechaLocal)
   // Obtener tiradas del día
-  const { data: tiradas } = await supabase
-    .from('tiradas')
-    .select('id, completada')
-    .eq('user_id', userId)
-    .eq('fecha', fechaLocal)
+  
+  const { data: tiradasData, error } = await supabase
+  .from('tiradas')
+  .select('id, fecha, completada, acciones (id, completada)')
+  .eq('user_id', userId)
+  .eq('fecha', fechaLocal)
+  .order('created_at', { ascending: false }) // por si hay más de una, prioriza la más reciente
 
-  // IDs de tiradas del día
-  const tiradasIds = tiradas?.map(t => t.id) || []
-  console.log('[user-progress] tiradas del día:', tiradasIds)
-  // Acciones por tirada
-  const { data: acciones } = await supabase
-    .from('acciones')
-    .select('tirada_id, completada')
+  if (error) {
+    console.error('[user-progress] Error al obtener tiradas:', error)
+    return NextResponse.json({ error: 'Error al obtener tiradas' }, { status: 500 })
+  }
+  console.log('[user-progress] tiradas:', tiradasData)
 
-  const accionesPorTirada = new Map<string, boolean[]>()
-  console.log('[user-progress] acciones:', acciones)
-
-  // Agrupar acciones por tirada
-
-    for (const accion of acciones || []) {
-    if (!accionesPorTirada.has(accion.tirada_id)) {
-      accionesPorTirada.set(accion.tirada_id, [])
+  if (!tiradasData || tiradasData.length === 0) {
+    return {
+      tiradasCompletadas: 0,
+      accionesEnCurso: 0,
     }
-    accionesPorTirada.get(accion.tirada_id)!.push(accion.completada)
   }
 
-  let tiradasCompletadas = 0
+  // 2. Identificar cuántas están completadas
+  const tiradasCompletadas = tiradasData.filter(t => t.completada).length
+
+  // 3. Buscar la tirada activa (no completada)
+  const tiradaActiva = tiradasData.find(t => !t.completada)
   let accionesEnCurso = 0
 
-  for (const [tiradaId, completadas] of accionesPorTirada.entries()) {
-    const total = completadas.length
-    const hechas = completadas.filter(c => c).length
-  
-    if (total === 3 && hechas === 3) {
-      tiradasCompletadas++
-    } else if (total === 3 && hechas < 3 && hechas > 0) {
-      accionesEnCurso = hechas + 1 // estamos en la siguiente acción
-    } else if (total === 3 && hechas === 0) {
-      accionesEnCurso = 1 // tirada recién iniciada
+  if (tiradaActiva && tiradaActiva.acciones) {
+    const acciones = tiradaActiva.acciones
+    const totalAcciones = acciones.length
+    const hechas = acciones.filter(a => a.completada).length
+
+    if (totalAcciones === 3 && hechas < 3 && hechas > 0) {
+      accionesEnCurso = hechas + 1
+    } else if (totalAcciones === 3 && hechas === 0) {
+      accionesEnCurso = 1
     }
   }
+  console.log('[user-progress] tiradasCompletadas:', tiradasCompletadas)
+  console.log('[user-progress] accionesEnCurso:', accionesEnCurso)
 
   return NextResponse.json({ tiradasCompletadas, accionesEnCurso }, { status: 200 })
 

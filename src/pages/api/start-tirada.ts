@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextApiRequest, NextApiResponse } from 'next'
+import { toZonedTime, format } from 'date-fns-tz'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -15,6 +16,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Missing user_id' })
   }
 
+
+  // Supón que ya tienes el userId
+  const { data: userData } = await supabase
+    .from('users')
+    .select('timezone')
+    .eq('id', user_id)
+    .single()
+
+  console.log('[user-progress] timezone:', userData?.timezone)
+  // Obtener la zona horaria del usuario
+
+  const timezone = userData?.timezone || 'America/Mexico_City'
+  const ahora = new Date()
+  const zonedDate = toZonedTime(ahora, timezone)
+  const fechaLocal = format(zonedDate, 'yyyy-MM-dd')
+  
+  console.log('[user-progress] fecha local:', fechaLocal)
+  // Obtener tiradas del día
+
   // Paso 1: Obtener tirada activa existente para hoy
   const hoy = new Date().toISOString().split('T')[0]
 
@@ -24,6 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     .eq('user_id', user_id)
     .eq('fecha', hoy)
     .eq('completada', false)
+    .eq('fecha', fechaLocal)
     .limit(1)
     .single()
 
