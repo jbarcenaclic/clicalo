@@ -93,7 +93,7 @@ export default function TiradaPage() {
   
     if (!action) {
       setCurrentAction(null)
-      //setTiradaDone(true)
+      setTiradaDone(true)
     } else {
       console.log('[tirada] ✅ Acción encontrada:', action)
       setCurrentAction(action)
@@ -109,6 +109,7 @@ export default function TiradaPage() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        valorVisible: rewardValue,
         action_id: currentAction.id,
         duration: 5,
       }),

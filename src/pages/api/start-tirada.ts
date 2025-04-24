@@ -1,11 +1,7 @@
-import { createClient } from '@supabase/supabase-js'
+// src/pages/api/start-tirada.ts
+import { supabase } from '@/lib/supabaseClient'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { toZonedTime, format } from 'date-fns-tz'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { user_id } = req.body
@@ -15,7 +11,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log('[ERROR] user_id no proporcionado.')
     return res.status(400).json({ error: 'Missing user_id' })
   }
-
 
   // Supón que ya tienes el userId
   const { data: userData } = await supabase

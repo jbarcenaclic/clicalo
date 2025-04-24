@@ -1,10 +1,6 @@
-import { createClient } from '@supabase/supabase-js'
+// src/pages/api/complete-action.ts
 import { NextApiRequest, NextApiResponse } from 'next'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { supabase } from '@/lib/supabaseClient'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -12,8 +8,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const { valorVisible, action_id, duration } = req.body;
-
-  if (!action_id) return res.status(400).json({ error: 'Missing action_id' })
+  console.log('>> Complete action:', { valorVisible, action_id, duration })
+  if (!action_id) return res.status(400).json ({ error: 'Missing action_id' })
 
   // Mark action as completed
   const { data: action, error: fetchError } = await supabase
@@ -22,12 +18,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     .eq('id', action_id)
     .single()
   if (fetchError || !action) return res.status(404).json({ error: 'Action not found' })
-
+  console.log('>> Action found:', action)
   await supabase
     .from('acciones')
     .update({ completada: true, end_time: new Date() })
     .eq('id', action_id)
-
+  console.log('>> Action marked as completed:', action_id)
   // Check if tirada is now fully completed
   const { data: pendientes } = await supabase
     .from('acciones')
@@ -38,9 +34,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!Array.isArray(pendientes)) {
     return res.status(400).json({ error: 'Lista de acciones pendientes inválida o faltante' });
   }
-  
+  console.log('>> Acciones pendientes:', pendientes)
   if (pendientes.length === 0) {
     // All actions completed → mark tirada and register payout
+    console.log('>> Todas las acciones completadas, marcando tirada como completada')
     const valorVisible = 0.035
     const { data: tirada } = await supabase
       .from('tiradas')
