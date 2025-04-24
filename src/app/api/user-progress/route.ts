@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabaseClient'
 import { NextResponse } from 'next/server'
 import { toZonedTime, format } from 'date-fns-tz'
 
-export async function GET(req: Request) {
+export async function GET(req: Request): Promise<Response> {
   try {
     const { searchParams } = new URL(req.url)
     const userId = searchParams.get('user_id')
@@ -44,10 +44,7 @@ export async function GET(req: Request) {
     console.log('[user-progress] tiradas:', tiradasData)
 
     if (!tiradasData || tiradasData.length === 0) {
-      return {
-        tiradasCompletadas: 0,
-        accionesEnCurso: 0,
-      }
+      return NextResponse.json({ tiradasCompletadas: 0, accionesEnCurso: 0 }, { status: 500 })
     }
 
     // 2. Identificar cuántas están completadas
@@ -71,7 +68,7 @@ export async function GET(req: Request) {
     console.log('[user-progress] tiradasCompletadas:', tiradasCompletadas)
     console.log('[user-progress] accionesEnCurso:', accionesEnCurso)
 
-    return NextResponse.json({ tiradasCompletadas, accionesEnCurso })
+    return NextResponse.json({ tiradasCompletadas, accionesEnCurso }, { status: 200 })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
