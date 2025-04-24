@@ -71,7 +71,7 @@ export async function GET(req: Request) {
     console.log('[user-progress] tiradasCompletadas:', tiradasCompletadas)
     console.log('[user-progress] accionesEnCurso:', accionesEnCurso)
 
-    return NextResponse.json({ tiradasCompletadas, accionesEnCurso }, { status: 200 })
+    return NextResponse.json({ tiradasCompletadas, accionesEnCurso })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
