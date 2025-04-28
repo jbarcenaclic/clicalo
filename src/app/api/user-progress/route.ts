@@ -53,11 +53,13 @@ export async function GET(req: Request): Promise<Response> {
     // 3. Buscar la tirada activa (no completada)
     const tiradaActiva = tiradasData.find(t => !t.completada)
     let accionesEnCurso = 0
-
+    console.log('[user-progress] tirada activa:', tiradaActiva)
     if (tiradaActiva && tiradaActiva.acciones) {
       const acciones = tiradaActiva.acciones
       const totalAcciones = acciones.length
       const hechas = acciones.filter(a => a.completada).length
+      console.log('[user-progress] totalAcciones:', totalAcciones)
+      console.log('[user-progress] hechas:', hechas)
 
       if (totalAcciones === 3 && hechas < 3 && hechas > 0) {
         accionesEnCurso = hechas + 1

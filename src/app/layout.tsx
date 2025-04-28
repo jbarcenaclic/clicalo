@@ -1,17 +1,9 @@
 // src/app/layout.tsx
 import './globals.css'
-import { cookies } from 'next/headers'
-import { createServerClient } from '@supabase/ssr'
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { supabase } from '@/lib/supabaseClient'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, // ✅ Aquí usamos la clave pública
-    {
-      cookies: cookies() as any
-    }
-  )
 
   const { data: { user } } = await supabase.auth.getUser()
   console.log('user:', user)

@@ -1,83 +1,73 @@
 // src/pages/api/start-tirada.ts
+
 import { supabase } from '@/lib/supabaseClient'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { toZonedTime, format } from 'date-fns-tz'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Método no permitido' })
+  }
+
   const { user_id } = req.body
-  console.log('[START] start-tirada.ts llamado con user_id:', user_id)
 
   if (!user_id) {
-    console.log('[ERROR] user_id no proporcionado.')
-    return res.status(400).json({ error: 'Missing user_id' })
+    return res.status(400).json({ error: 'Falta user_id' })
   }
 
-  // Supón que ya tienes el userId
-  const { data: userData } = await supabase
-    .from('users')
-    .select('timezone')
-    .eq('id', user_id)
-    .single()
+  try {
+    // 1. Validar cuántas tiradas lleva hoy este usuario
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
 
-  console.log('[user-progress] timezone:', userData?.timezone)
-  // Obtener la zona horaria del usuario
+    const { data: tiradasHoy, error: errorTiradas } = await supabase
+      .from('tiradas')
+      .select('id', { count: 'exact' })
+      .eq('user_id', user_id)
+      .gte('created_at', today.toISOString())
 
-  const timezone = userData?.timezone || 'America/Mexico_City'
-  const ahora = new Date()
-  const zonedDate = toZonedTime(ahora, timezone)
-  const fechaLocal = format(zonedDate, 'yyyy-MM-dd')
-  
-  console.log('[user-progress] fecha local:', fechaLocal)
-  // Obtener tiradas del día
+    if (errorTiradas) {
+      console.error('[start-tirada] Error al contar tiradas de hoy:', errorTiradas)
+      return res.status(500).json({ error: 'Error al verificar tiradas' })
+    }
 
-  // Paso 1: Obtener tirada activa existente para hoy
-  const hoy = new Date().toISOString().split('T')[0]
+    if (tiradasHoy && tiradasHoy.length >= 10) {
+      console.log('[start-tirada] Usuario ya alcanzó 10 tiradas hoy')
+      return res.status(400).json({ error: 'Ya alcanzaste el límite de 10 tiradas hoy.' })
+    }
 
-  const { data: tiradaExistente } = await supabase
-    .from('tiradas')
-    .select('id')
-    .eq('user_id', user_id)
-    .eq('fecha', hoy)
-    .eq('completada', false)
-    .eq('fecha', fechaLocal)
-    .limit(1)
-    .single()
+    // 2. Crear nueva tirada
+    const { data: nuevaTirada, error: errorCrear } = await supabase
+      .from('tiradas')
+      .insert([{ user_id, completada: false }])
+      .select()
+      .single()
 
-  // Si ya existe una, devuélvela directamente
-  if (tiradaExistente) {
-    console.log('[OK] Tirada existente encontrada:', tiradaExistente.id)
-    return res.status(200).json({ tirada_id: tiradaExistente.id })
+    if (errorCrear || !nuevaTirada) {
+      console.error('[start-tirada] Error al crear nueva tirada:', errorCrear)
+      return res.status(500).json({ error: 'No se pudo crear la tirada' })
+    }
+
+    // 3. Crear 3 acciones para esta tirada
+    const acciones = [
+      { tirada_id: nuevaTirada.id, orden: 1 },
+      { tirada_id: nuevaTirada.id, orden: 2 },
+      { tirada_id: nuevaTirada.id, orden: 3 },
+    ]
+
+    const { error: errorAcciones } = await supabase
+      .from('acciones')
+      .insert(acciones)
+
+    if (errorAcciones) {
+      console.error('[start-tirada] Error al crear acciones:', errorAcciones)
+      return res.status(500).json({ error: 'No se pudieron crear las acciones' })
+    }
+
+    // 4. Responder con éxito
+    return res.status(200).json({ tirada_id: nuevaTirada.id })
+
+  } catch (error) {
+    console.error('[start-tirada] Error general:', error)
+    return res.status(500).json({ error: 'Error en el servidor' })
   }
-  console.log('[OK] No se encontró tirada existente, creando una nueva...')
-  // Crear tirada
-  const { data: tirada, error: tiradaError } = await supabase
-    .from('tiradas')
-    .insert({ user_id })
-    .select()
-    .single()
-
-  if (tiradaError) {
-    console.error('[ERROR] No se pudo crear la tirada:', tiradaError.message)
-    return res.status(500).json({ error: tiradaError.message })
-  }
-
-  console.log('[OK] Tirada creada con ID:', tirada.id)
-
-  // Crear 3 acciones dummy
-  const acciones = [1, 2, 3].map((orden) => ({
-    tirada_id: tirada.id,
-    tipo: 'dummy',
-    orden,
-    completada: false,
-  }))
-
-  const { error: accionesError } = await supabase.from('acciones').insert(acciones)
-
-  if (accionesError) {
-    console.error('[ERROR] No se pudieron insertar las acciones:', accionesError.message)
-    return res.status(500).json({ error: accionesError.message })
-  }
-
-  console.log('[OK] Acciones insertadas correctamente para tirada:', tirada.id)
-  res.status(200).json({ tirada_id: tirada.id })
 }
