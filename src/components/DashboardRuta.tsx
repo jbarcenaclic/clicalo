@@ -34,17 +34,30 @@ function DashboardRutaComponent({
         <div className="flex gap-1">
           {Array.from({ length: 3 }).map((_, j) => {
             let pasoClase = 'bg-gray-300'
-            if (esCompletado) pasoClase = 'bg-green-500'
-            else if (esActivo) {
-              if (j < accionesEnCurso - 1) pasoClase = 'bg-green-500' // ya hechas
-              else if (j === accionesEnCurso - 1) pasoClase = 'bg-yellow-400' // actual
+            let animacion = ''
+            
+            if (esCompletado) {
+              pasoClase = 'bg-green-500'
+            } else if (esActivo) {
+              if (j < accionesEnCurso - 1) {
+                pasoClase = 'bg-green-500'
+              } else if (j === accionesEnCurso - 1) {
+                pasoClase = 'bg-yellow-400'
+                animacion = 'animate-ping'
+              }
             }
             return (
-              <div
-                key={j}
-                className={`w-2 h-2 rounded-full transition-colors duration-300 ${pasoClase}`}
-              />
+              <div key={j} className="relative w-2 h-2 flex items-center justify-center">
+                {animacion && (
+                  <span
+                    className={`absolute inline-flex h-full w-full rounded-full ${pasoClase} ${animacion}`}
+                    style={{ boxShadow: '0 0 0 2px rgba(255,255,0,0.4)' }}
+                  />
+                )}
+                <span className={`relative block h-full w-full rounded-full ${pasoClase}`} />
+              </div>
             )
+
           })}
         </div>
       </motion.div>
