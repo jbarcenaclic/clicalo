@@ -1,17 +1,14 @@
 // src/app/juego-trivia-local/page.tsx
 'use client'
 
-import { useState } from 'react'
 
-useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search)
-    const actionId = queryParams.get('action_id')
-    if (actionId) setActionId(actionId)
-  }, [])
+import { useState, useEffect } from 'react'
+
 
 export default function JuegoTriviaLocal() {
   const [respuesta, setRespuesta] = useState<string | null>(null)
   const [completada, setCompletada] = useState(false)
+  const [actionId, setActionId] = useState<string | null>(null)
 
   const opciones = [
     { texto: 'Ciudad de México', correcta: true },
@@ -19,6 +16,12 @@ export default function JuegoTriviaLocal() {
     { texto: 'Monterrey', correcta: false },
     { texto: 'Tijuana', correcta: false }
   ]
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search)
+    const actionId = queryParams.get('action_id')
+    if (actionId) setActionId(actionId)
+  }, [])
 
   const validar = async (opcion: typeof opciones[0]) => {
     setRespuesta(opcion.correcta ? '✅ ¡Correcto!' : '❌ Incorrecto')
