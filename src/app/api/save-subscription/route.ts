@@ -1,9 +1,8 @@
 // src/app/api/save-subscription/route.ts
-import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { NextResponse } from 'next/server'
+import { supabase } from '@/lib/supabaseClient'
 
 export async function POST(req: Request) {
-  const supabase = await createSupabaseServerClient()
 
   const { data: { user }, error } = await supabase.auth.getUser()
   if (!user || error) {

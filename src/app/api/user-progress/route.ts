@@ -1,7 +1,7 @@
 // app/api/user-progress/route.ts
 import { supabase } from '@/lib/supabaseClient'
 import { NextResponse } from 'next/server'
-import { toZonedTime, format } from 'date-fns-tz'
+import { getFechaLocal } from '@/lib/fechaLocal'
 
 export async function GET(req: Request): Promise<Response> {
   try {
@@ -19,16 +19,17 @@ export async function GET(req: Request): Promise<Response> {
       .eq('id', userId)
       .single()
 
-    console.log('[user-progress] timezone:', userData?.timezone)
-    // Obtener la zona horaria del usuario
+  if (!userData) {
+    return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 })
+  }
 
-    const timezone = userData?.timezone || 'America/Mexico_City'
-    const ahora = new Date()
-    const zonedDate = toZonedTime(ahora, timezone)
-    const fechaLocal = format(zonedDate, 'yyyy-MM-dd')
-    
-    console.log('[user-progress] fecha local:', fechaLocal)
-    // Obtener tiradas del día
+  console.log('[user-progress] timezone:', userData?.timezone)
+  // Obtener la zona horaria del usuario
+
+  const { fecha:fechaLocal, hora } = getFechaLocal(userData)
+
+  console.log('[user-progress] fecha local:', fechaLocal)
+  // Obtener tiradas del día
     
     const { data: tiradasData, error } = await supabase
     .from('tiradas')
@@ -49,28 +50,35 @@ export async function GET(req: Request): Promise<Response> {
 
     // 2. Identificar cuántas están completadas
     const tiradasCompletadas = tiradasData.filter(t => t.completada).length
-
-    // 3. Buscar la tirada activa (no completada)
     const tiradaActiva = tiradasData.find(t => !t.completada)
+
     let accionesEnCurso = 0
-    console.log('[user-progress] tirada activa:', tiradaActiva)
+    let accionesTotales = 0
+    let accionesHechas = 0
+    let tiradaActivaId = null
+
     if (tiradaActiva && tiradaActiva.acciones) {
       const acciones = tiradaActiva.acciones
-      const totalAcciones = acciones.length
-      const hechas = acciones.filter(a => a.completada).length
-      console.log('[user-progress] totalAcciones:', totalAcciones)
-      console.log('[user-progress] hechas:', hechas)
+      accionesTotales = acciones.length
+      accionesHechas = acciones.filter(a => a.completada).length
+      tiradaActivaId = tiradaActiva.id
 
-      if (totalAcciones === 3 && hechas < 3 && hechas > 0) {
-        accionesEnCurso = hechas + 1
-      } else if (totalAcciones === 3 && hechas === 0) {
-        accionesEnCurso = 1
+      if (accionesTotales >= 1 && accionesHechas < accionesTotales) {
+        accionesEnCurso = accionesHechas + 1
       }
     }
+
     console.log('[user-progress] tiradasCompletadas:', tiradasCompletadas)
     console.log('[user-progress] accionesEnCurso:', accionesEnCurso)
 
-    return NextResponse.json({ tiradasCompletadas, accionesEnCurso }, { status: 200 })
+    return NextResponse.json({
+      tiradasCompletadas,
+      accionesEnCurso,
+      tiradaActivaId,
+      accionesTotales,
+      accionesHechas,
+    })
+
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

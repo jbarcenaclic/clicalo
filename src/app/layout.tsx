@@ -1,23 +1,23 @@
 // src/app/layout.tsx
 import './globals.css'
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { supabase } from '@/lib/supabaseClient'
+import UserStatus from '@/components/UserStatus'
+import { LoginProvider } from '@/context/LoginContext'
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-
-  const { data: { user } } = await supabase.auth.getUser()
-  console.log('user:', user)
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
       <body>
-        <header className="p-4 bg-zinc-900 text-white flex justify-between items-center">
-          <span>🚀 CLÍCALO</span>
-          <span className="text-sm">
-            {user?.id ? '🔓 Loggeado' : '🔒 No loggeado'}
-          </span>
-        </header>
-        {children}
+        <LoginProvider>
+          <header className="p-4 bg-zinc-900 text-white flex justify-between items-center">
+            <span>🚀 CLÍCALO</span>
+            <UserStatus />
+          </header>
+          <main className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-clicalo-azul to-clicalo-azul/50">
+            <SpeedInsights />
+            {children}
+          </main>
+        </LoginProvider>
       </body>
     </html>
   )

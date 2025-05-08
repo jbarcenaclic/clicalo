@@ -33,12 +33,16 @@ function DashboardRutaComponent({
         </div>
         <div className="flex gap-1">
           {Array.from({ length: 3 }).map((_, j) => {
-            const pasoCompleto = esCompletado || (esActivo && j < accionesEnCurso)
+            let pasoClase = 'bg-gray-300'
+            if (esCompletado) pasoClase = 'bg-green-500'
+            else if (esActivo) {
+              if (j < accionesEnCurso - 1) pasoClase = 'bg-green-500' // ya hechas
+              else if (j === accionesEnCurso - 1) pasoClase = 'bg-yellow-400' // actual
+            }
             return (
               <div
                 key={j}
-                className={`w-2 h-2 rounded-full transition-colors duration-300
-                  ${pasoCompleto ? 'bg-green-500' : 'bg-gray-300'}`}
+                className={`w-2 h-2 rounded-full transition-colors duration-300 ${pasoClase}`}
               />
             )
           })}

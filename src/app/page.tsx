@@ -5,20 +5,15 @@ import PageContainer from '@/components/PageContainer'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import PrimaryButton from '@/components/PrimaryButton'
+import { useLogin } from '@/context/LoginContext'
 
 
 export default function Home() {
   const [phone, setPhone] = useState('')
   const [loading, setLoading] = useState(false)
-  const [loggedIn, setLoggedIn] = useState(false)
   const router = useRouter()
 
-  useEffect(() => {
-    const user_id = localStorage.getItem('user_id')
-    if (user_id) {
-      setLoggedIn(true)
-    }
-  }, [])
+  const { isLoggedIn } = useLogin()
 
   const handleLogin = async () => {
     if (!phone) return alert('Ingresa tu número')
@@ -28,13 +23,12 @@ export default function Home() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone }),
+        credentials: 'include', // 🧠 importante para recibir la cookie
       })
-      const data = await res.json()
       if (res.ok) {
-        localStorage.setItem('user_id', data.user_id)
-        localStorage.setItem('phone', phone)
-        router.push('/tirada')
+        window.location.href = '/tirada?bienvenida=1'
       } else {
+        const data = await res.json()
         alert(`❌ Error: ${data.error}`)
       }
     } catch (err) {
@@ -60,16 +54,23 @@ export default function Home() {
         </ul>
       </section>
 
-      {!loggedIn && (
+      {!isLoggedIn && (
         <div className="text-center mb-10">
           <p className="mb-2 text-lg text-clicalo-grisTexto">Ingresa tu número para comenzar</p>
           <div className="flex flex-col sm:flex-row justify-center items-center gap-2 mb-4">
-            <input
+          <input
               type="tel"
               placeholder="Tu número (ej. +525512345678)"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="p-2 rounded border w-64 text-black"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  handleLogin()
+                }
+              }}
+              disabled={loading}
+              className="p-2 rounded border w-64 text-black disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <PrimaryButton onClick={handleLogin} disabled={loading}>
               {loading ? 'Cargando...' : 'Ingresar'}
@@ -78,11 +79,11 @@ export default function Home() {
         </div>
       )}
 
-      {loggedIn && (
+      {isLoggedIn && (
         <section className="text-center">
           <p className="mb-2 text-lg text-clicalo-grisTexto">+1,000 usuarios registrados</p>
           <p className="mb-6 text-lg text-clicalo-grisTexto">85% tasa de finalización · $0.045 USD por acción</p>
-          <Link href="/tirada">
+          <Link href="/tirada?bienvenida=1">
             <PrimaryButton>Ir a mi tirada</PrimaryButton>
           </Link>
         </section>

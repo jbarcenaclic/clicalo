@@ -10,6 +10,7 @@ const config: Config = {
       colors: {
         clicalo: {
           azul: '#0052A4',
+          'clicalo-azul': '#0045a5',
           amarillo: '#FFD633',
           amarilloHover: '#F8B100',
           grisTexto: '#E5E5E5',

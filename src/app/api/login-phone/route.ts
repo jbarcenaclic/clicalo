@@ -1,5 +1,8 @@
+// src/app/api/login-phone/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { cookies } from 'next/headers'
+import { serialize } from 'cookie'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -34,5 +37,16 @@ export async function POST(req: NextRequest) {
     user = newUser
   }
 
-  return NextResponse.json({ user_id: user.id })
+  // Set cookie httpOnly
+  const response = NextResponse.json({ success: true })
+  response.cookies.set('user_id', user.id, {
+    httpOnly: true,
+    maxAge: 60 * 60 * 24 * 7,
+    path: '/',
+    sameSite: 'lax',
+    // secure: true, // ⚠️ sólo en producción (HTTPS)
+  })
+
+  return response
 }
+  
