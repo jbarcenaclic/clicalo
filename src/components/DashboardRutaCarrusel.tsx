@@ -86,8 +86,8 @@ export function DashboardRutaCarrusel({
       </motion.div>
     )
   })
-  const mostrarSol = tiradasCompletadas <= 2
-  const mostrarBandera = tiradasCompletadas >= totalTiradas - 3
+  const mostrarSol = tiradasCompletadas < 2
+  const mostrarBandera = tiradasCompletadas > totalTiradas - 3
   
   const flujoFinalizado = tiradasCompletadas >= totalTiradas
   if (flujoFinalizado) {
