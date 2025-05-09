@@ -84,7 +84,7 @@ export default function Home() {
         <section className="text-center">
           <p className="mb-2 text-lg text-clicalo-grisTexto">+1,000 usuarios registrados</p>
           <p className="mb-6 text-lg text-clicalo-grisTexto">85% tasa de finalización · $0.045 USD por acción</p>
-          <Link href="/tirada?bienvenida=1">
+          <Link href="/tirada">
             <PrimaryButton>Ir a mi tirada</PrimaryButton>
           </Link>
         </section>

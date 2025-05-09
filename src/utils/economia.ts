@@ -1,9 +1,12 @@
 // src/utils/economia.ts
-import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { createClient } from '@supabase/supabase-js'
+
 
 export async function calcularPayoutReal(tirada_id: string): Promise<number> {
-  const supabase = createSupabaseServerClient()
-
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
   const { data: acciones, error } = await supabase
     .from('acciones')
     .select('payout_real, payout_estimado')

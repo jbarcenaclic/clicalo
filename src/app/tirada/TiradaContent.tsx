@@ -3,12 +3,11 @@ import { useEffect, useState, useCallback } from 'react'
 
 import PageContainer from '@/components/PageContainer'
 import PrimaryButton from '@/components/PrimaryButton'
-import { DashboardRuta } from '@/components/DashboardRuta'
+import { DashboardRuta } from '@/components/DashboardRutaCarrusel'
 import PushSubscription from '@/components/PushSubscription'
-import AccionBitlabs from '@/components/AccionBitlabs'
 import { firmarUserId } from '@/utils/firmarUserId.client'
 import { Dialog } from '@headlessui/react'
-import { useSearchParams } from 'next/navigation'
+
 
 type Action = {
   id: string
@@ -22,6 +21,8 @@ type Action = {
 type Progreso = {
   tiradasCompletadas: number
   accionesEnCurso: number
+  rachaDias?: number
+  totalSemanal?: number
 }
 
 export default function TiradaContent() {
@@ -34,7 +35,7 @@ export default function TiradaContent() {
   const [transitioning, setTransitioning] = useState(false)
   const [retrying, setRetrying] = useState(false)
   const [showBienvenida, setShowBienvenida] = useState(false)
-  const searchParams = useSearchParams()
+
 
   const [progreso, setProgreso] = useState<Progreso>({
     tiradasCompletadas: 0,
@@ -42,10 +43,14 @@ export default function TiradaContent() {
   })
 
   useEffect(() => {
-    if (searchParams?.get('bienvenida') === '1') {
-      setShowBienvenida(true)
+    if (typeof window !== 'undefined') {
+      const yaVisto = sessionStorage.getItem('vistoBienvenida')
+      if (!yaVisto) {
+        setShowBienvenida(true)
+        sessionStorage.setItem('vistoBienvenida', '1')
+      }
     }
-  }, [searchParams])
+  }, [])
 
   const obtenerProgreso = async (userId: string): Promise<Progreso | undefined> => {
     try {
@@ -156,6 +161,35 @@ export default function TiradaContent() {
     }
   }
 
+  function generarMensajeCompartir() {
+    const base = '¡Ya completé mis 10 tiradas de hoy en CLÍCALO! 💰'
+  
+    if (progreso?.rachaDias && progreso.rachaDias >= 3) {
+      return `🔥 Llevo ${progreso.rachaDias} días seguidos ganando en CLÍCALO. ¡Súmate tú también!`
+    }
+  
+    if (progreso?.totalSemanal && progreso.totalSemanal >= 0.5) {
+      return `💸 Esta semana gané $${progreso.totalSemanal.toFixed(2)} en CLÍCALO solo por hacer clics.`
+    }
+  
+    return base
+  }
+
+  const compartirProgreso = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'CLÍCALO',
+        text: generarMensajeCompartir(),
+        url: window.location.href,
+      }).catch((err) => {
+        console.error('Error al compartir:', err)
+      })
+    } else {
+      alert('Tu dispositivo no soporta compartir directamente 😢')
+    }
+  }
+  
+
   const tiradasRestantes = progreso.tiradasCompletadas < 10
 
   return (
@@ -204,36 +238,45 @@ export default function TiradaContent() {
 
         {!tiradasRestantes && (
           <div className="mt-8 p-6 bg-white shadow-xl rounded-lg border border-green-300 text-center text-clicalo-azul">
-            <h2 className="text-3xl font-bold text-green-700 mb-2">🎉 ¡Meta diaria alcanzada!</h2>
-            <p className="text-xl mb-4">Ganaste <strong>${(rewardValue * 10).toFixed(3)}</strong></p>
-            <div className="mb-4">
-              {currentAction?.url_inicio && (
-                <iframe
-                  src={currentAction.url_inicio}
-                  width="100%"
-                  height="600"
-                  allow="fullscreen"
-                  sandbox="allow-same-origin allow-scripts allow-forms"
-                  className="w-full h-[600px] rounded border shadow"
-                />
-              )}
+            <h1 className="text-4xl font-bold mb-4">🎉🎉🎉</h1>
+            <h2 className="text-3xl font-bold text-green-700 mb-2">¡Meta diaria alcanzada!</h2>
+            <p className="text-xl mb-1">
+              Ganaste <strong>${(rewardValue * 10).toFixed(3)}</strong>
+            </p>
+            <p className="text-sm text-gray-600 mb-4">Vuelve mañana para seguir sumando.</p>
+
+            <div className="flex justify-center gap-2 mb-6">
+              <button
+                onClick={compartirProgreso}
+                className="bg-white text-green-700 font-semibold px-4 py-2 rounded hover:bg-gray-100 transition"
+              >
+                📤 Compartir
+              </button>
+              <button
+                onClick={() => (window.location.href = '/')}
+                className="bg-yellow-400 text-black font-semibold px-4 py-2 rounded hover:bg-yellow-300 transition"
+              >
+                ⬅️ Volver al inicio
+              </button>
             </div>
-            <p className="text-sm text-white/80 mb-2">
+
+            {currentAction?.url_inicio && (
+              <iframe
+                src={currentAction.url_inicio}
+                width="100%"
+                height="600"
+                allow="fullscreen"
+                sandbox="allow-same-origin allow-scripts allow-forms"
+                className="w-full h-[600px] rounded border shadow"
+              />
+            )}
+
+            <p className="text-sm text-gray-500 mt-4">
               Haz clic en “✅ Completar acción” solo cuando hayas terminado la encuesta.
             </p>
-            <AccionBitlabs
-              action={currentAction}
-              onComplete={async () => {
-                setTransitioning(true)
-                if (tiradaId && userId) {
-                  await cargarSiguienteAccion(tiradaId, userId)
-                  await obtenerProgreso(userId)
-                }
-                setTransitioning(false)
-              }}
-            />
           </div>
         )}
+
 
         {message && tiradasRestantes && !tiradaDone && (
           <p className="mt-6 text-white bg-green-600 inline-block px-4 py-2 rounded shadow font-semibold">{message}</p>
