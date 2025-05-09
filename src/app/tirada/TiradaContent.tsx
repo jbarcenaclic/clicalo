@@ -73,7 +73,12 @@ export default function TiradaContent() {
       })
 
       const data = await res.json()
+
       if (!res.ok) {
+        if (res.status === 429) {
+          console.log('[tirada] límite de tiradas alcanzado')
+          return // o mostrar un mensaje personalizado
+        }
         console.error('[tirada] error al iniciar tirada:', data?.error)
         return
       }
@@ -183,13 +188,13 @@ export default function TiradaContent() {
         url: window.location.href,
       }).catch((err) => {
         console.error('Error al compartir:', err)
+        alert('No se pudo compartir. Intenta copiar el link manualmente.')
       })
     } else {
-      alert('Tu dispositivo no soporta compartir directamente 😢')
+      alert('Tu dispositivo no soporta compartir directamente. Puedes copiar el enlace manualmente 😉')
     }
   }
   
-
   const tiradasRestantes = progreso.tiradasCompletadas < 10
 
   return (

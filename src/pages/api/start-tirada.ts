@@ -67,7 +67,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (tiradasHoy && tiradasHoy.length >= 10) {
       console.log('[start-tirada] Usuario ya alcanzó 10 tiradas hoy')
-      return res.status(400).json({ error: 'Ya alcanzaste el límite de 10 tiradas hoy.' })
+      return res.status(429).json({ error: 'Ya alcanzaste el límite de 10 tiradas hoy' })
     }
 
     // 3. Crear nueva tirada
