@@ -1,9 +1,9 @@
 // src/app/page.tsx
 'use client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import PageContainer from '@/components/PageContainer'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation'
 import PrimaryButton from '@/components/PrimaryButton'
 import { useLogin } from '@/context/LoginContext'
 
@@ -11,7 +11,7 @@ import { useLogin } from '@/context/LoginContext'
 export default function Home() {
   const [phone, setPhone] = useState('')
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
+  //const router = useRouter()
 
   const { isLoggedIn } = useLogin()
 
@@ -33,6 +33,7 @@ export default function Home() {
       }
     } catch (err) {
       alert('❌ Error inesperado')
+      console.log(err)
     } finally {
       setLoading(false)
     }
@@ -45,12 +46,12 @@ export default function Home() {
       </p>
 
       <section className="bg-white text-clicalo-azul rounded-xl p-6 max-w-xl w-full shadow-lg mb-8">
-        <h2 className="text-2xl font-semibold mb-4 text-center">¿Cómo funciona?</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-center">Convierte tu tiempo digital en recompensas reales.</h2>
         <ul className="space-y-2 text-lg list-disc list-inside">
-          <li>10 tiradas al día</li>
-          <li>3 acciones por tirada</li>
-          <li>Gana dinero real desde WhatsApp o web</li>
-          <li>Pagos mensuales, sin instalar apps</li>
+          <li>Realiza acciones como ver anuncios o responder encuestas</li>
+          <li>Recibe tus recompensas en efectivo cada mes, fácil y seguro</li>
+          <li>No descargas nada. Funciona directo desde tu navegador</li>
+          <li>No necesitas cuenta de banco ni dar tus datos personales</li>
         </ul>
       </section>
 

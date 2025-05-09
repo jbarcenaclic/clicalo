@@ -65,10 +65,12 @@ function DashboardRutaComponent({
   })
 
   return (
-    <div className="flex justify-center items-center gap-4 mt-8">
-      <span className="text-yellow-400 text-2xl">🌞</span>
-      {bloques}
-      <span className="text-green-500 text-2xl">🏁</span>
+    <div className="overflow-x-auto w-full max-w-full px-2">
+      <div className="flex justify-center items-center gap-4 min-w-[720px]">
+        <span className="text-yellow-400 text-2xl">🌞</span>
+        {bloques}
+        <span className="text-green-500 text-2xl">🏁</span>
+      </div>
     </div>
   )
 }
