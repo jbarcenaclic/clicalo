@@ -188,6 +188,7 @@ export default function TiradaContent() {
         url: window.location.href,
       }).catch((err) => {
         console.error('Error al compartir:', err)
+<<<<<<< HEAD
         alert('No se pudo compartir. Intenta copiar el link manualmente.')
       })
     } else {
@@ -195,6 +196,15 @@ export default function TiradaContent() {
     }
   }
   
+=======
+      })
+    } else {
+      alert('Tu dispositivo no soporta compartir directamente 😢')
+    }
+  }
+  
+
+>>>>>>> 2c41404 (Update mayor de deshboard y flujo)
   const tiradasRestantes = progreso.tiradasCompletadas < 10
 
   return (
