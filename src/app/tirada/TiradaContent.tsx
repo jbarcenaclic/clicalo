@@ -33,7 +33,6 @@ export default function TiradaContent() {
   const [tiradaDone, setTiradaDone] = useState(false)
   const [rewardValue, setRewardValue] = useState(0.035)
   const [transitioning, setTransitioning] = useState(false)
-  const [retrying, setRetrying] = useState(false)
   const [showBienvenida, setShowBienvenida] = useState(false)
 
 
@@ -65,6 +64,10 @@ export default function TiradaContent() {
   }
 
   const iniciarTirada = useCallback(async (uid: string) => {
+    if (progreso.tiradasCompletadas >= 10) {
+      console.log('[tirada] Ya completaste las 10 tiradas. No se iniciará otra.')
+      return
+    }
     try {
       const res = await fetch('/api/start-tirada', {
         method: 'POST',
@@ -104,12 +107,8 @@ export default function TiradaContent() {
         setCurrentAction(null)
         setMessage('')
         const nuevoProgreso = await obtenerProgreso(uid)
-        if (!retrying && nuevoProgreso && nuevoProgreso.tiradasCompletadas < 10) {
-          setRetrying(true)
-          setTimeout(() => {
-            iniciarTirada(uid)
-            setRetrying(false)
-          }, 1000)
+        if (nuevoProgreso && nuevoProgreso.tiradasCompletadas < 10) {
+          await iniciarTirada(uid)
         }
         return
       }
