@@ -1,7 +1,7 @@
-// src/components/DashboardRuta.tsx
+'use client'
 
 import { motion } from 'framer-motion'
-import { useEffect, memo } from 'react'
+import { useEffect, useRef, useState, memo } from 'react'
 
 function DashboardRutaComponent({
   tiradasCompletadas = 0,
@@ -10,16 +10,31 @@ function DashboardRutaComponent({
   tiradasCompletadas: number
   accionesEnCurso: number
 }) {
+  const tiradaRef = useRef<(HTMLDivElement | null)[]>([])
+  const [flash, setFlash] = useState(false)
+
   useEffect(() => {
-    console.log('[DashboardRuta] tiradasCompletadas:', tiradasCompletadas, 'accionesEnCurso:', accionesEnCurso)
-  }, [tiradasCompletadas, accionesEnCurso])
+    const activa = tiradaRef.current[tiradasCompletadas]
+    if (activa) {
+      activa.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+    }
+
+    setFlash(true)
+    const timeout = setTimeout(() => setFlash(false), 500)
+    return () => clearTimeout(timeout)
+  }, [tiradasCompletadas])
+
   const bloques = Array.from({ length: 10 }, (_, i) => {
     const esCompletado = i < tiradasCompletadas
     const esActivo = i === tiradasCompletadas
+
     return (
       <motion.div
         key={i}
-        className="flex flex-col items-center gap-1"
+        ref={(el) => {
+          tiradaRef.current[i] = el
+        }}
+        className="flex flex-col items-center gap-1 min-w-[48px]"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: i * 0.05 }}
@@ -35,7 +50,7 @@ function DashboardRutaComponent({
           {Array.from({ length: 3 }).map((_, j) => {
             let pasoClase = 'bg-gray-300'
             let animacion = ''
-            
+
             if (esCompletado) {
               pasoClase = 'bg-green-500'
             } else if (esActivo) {
@@ -46,6 +61,7 @@ function DashboardRutaComponent({
                 animacion = 'animate-ping'
               }
             }
+
             return (
               <div key={j} className="relative w-2 h-2 flex items-center justify-center">
                 {animacion && (
@@ -57,7 +73,6 @@ function DashboardRutaComponent({
                 <span className={`relative block h-full w-full rounded-full ${pasoClase}`} />
               </div>
             )
-
           })}
         </div>
       </motion.div>
@@ -65,8 +80,8 @@ function DashboardRutaComponent({
   })
 
   return (
-    <div className="overflow-x-auto w-full max-w-full px-2">
-      <div className="flex justify-center items-center gap-4 min-w-[720px]">
+    <div className={`overflow-x-auto w-full px-2 transition-all duration-300 ${flash ? 'bg-yellow-100' : ''}`}>
+      <div className="flex justify-start items-center gap-4 min-w-[720px] px-4 py-2">
         <span className="text-yellow-400 text-2xl">🌞</span>
         {bloques}
         <span className="text-green-500 text-2xl">🏁</span>
@@ -74,4 +89,5 @@ function DashboardRutaComponent({
     </div>
   )
 }
+
 export const DashboardRuta = memo(DashboardRutaComponent)

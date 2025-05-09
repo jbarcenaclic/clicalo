@@ -42,11 +42,11 @@ export default function Home() {
   return (
     <PageContainer>
       <p className="text-xl mb-6 text-center font-light tracking-wide">
-        Microeconomía digital participativa para LATAM
+      Convierte tu tiempo digital en recompensas reales.
       </p>
 
       <section className="bg-white text-clicalo-azul rounded-xl p-6 max-w-xl w-full shadow-lg mb-8">
-        <h2 className="text-2xl font-semibold mb-4 text-center">Convierte tu tiempo digital en recompensas reales.</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-center">¿Cómo funciona?</h2>
         <ul className="space-y-2 text-lg list-disc list-inside">
           <li>Realiza acciones como ver anuncios o responder encuestas</li>
           <li>Recibe tus recompensas en efectivo cada mes, fácil y seguro</li>
