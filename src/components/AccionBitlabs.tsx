@@ -14,12 +14,14 @@ type Props = {
   
 export default function AccionBitlabs({ action, onComplete }: Props) {
   const [startTime, setStartTime] = useState<number | null>(null)
-  const [duration, setDuration] = useState<number>(0)
-  if (!action) return null // evita render si no hay acción activa
-
+ 
   useEffect(() => {
-    setStartTime(Date.now())
-  }, [action.id])
+    if (action) {
+      setStartTime(Date.now())
+    }
+  }, [action])
+
+  if (!action) return null // ya es seguro dejarlo aquí
 
   const completarAccion = async () => {
     const duracionMs = startTime ? Date.now() - startTime : 0

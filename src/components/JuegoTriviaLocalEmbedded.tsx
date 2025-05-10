@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function JuegoTriviaLocalEmbedded({
   actionId,
@@ -10,6 +10,12 @@ export default function JuegoTriviaLocalEmbedded({
 }) {
   const [respuesta, setRespuesta] = useState<string | null>(null)
   const [completada, setCompletada] = useState(false)
+  const [mostrarMensaje, setMostrarMensaje] = useState(false)
+
+  useEffect(() => {
+    setCompletada(false)
+    setRespuesta(null)
+  }, [actionId])
 
   const opciones = [
     { texto: 'Ciudad de México', correcta: true },
@@ -19,9 +25,13 @@ export default function JuegoTriviaLocalEmbedded({
   ]
 
   const validar = async (opcion: typeof opciones[0]) => {
-    const ok = opcion.correcta
-    setRespuesta(ok ? '✅ ¡Correcto!' : '❌ Incorrecto')
+    setRespuesta(opcion.correcta ? '✅ ¡Correcto!' : '❌ Incorrecto')
     setCompletada(true)
+    setMostrarMensaje(true)
+    
+    setTimeout(() => {
+      setMostrarMensaje(false)
+    }, 2000) // ocultar en 2 segundos
 
     try {
       await fetch('/api/complete-action', {
@@ -62,7 +72,11 @@ export default function JuegoTriviaLocalEmbedded({
               ? 'bg-green-100 text-green-800'
               : 'bg-red-100 text-red-800'}`}
         >
-          {respuesta}
+          {respuesta && mostrarMensaje && (
+            <p className="text-lg font-medium mb-4 transition-opacity duration-500 opacity-100">
+              {respuesta}
+            </p>
+          )}
         </p>
       )}
     </div>
