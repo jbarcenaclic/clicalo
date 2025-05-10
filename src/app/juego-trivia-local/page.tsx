@@ -18,6 +18,35 @@ export default function JuegoTriviaLocal() {
   ]
 
   useEffect(() => {
+    if (window.top === window.self) {
+      // No estamos dentro de un iframe
+      window.location.href = '/tirada'
+    }
+  }, [])
+ 
+  useEffect(() => {
+    let ultimaAltura = 0
+    const enviarAltura = () => {
+      const altura = document.body.scrollHeight
+      if (Math.abs(altura - ultimaAltura) > 20) {
+        window.parent.postMessage({ tipo: 'ajustarAltura', altura }, '*')
+        ultimaAltura = altura
+      }
+    }
+  
+    const observer = new ResizeObserver(enviarAltura)
+    observer.observe(document.body)
+  
+    enviarAltura()
+  
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+  
+  
+  
+  useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search)
     const actionId = queryParams.get('action_id')
     if (actionId) setActionId(actionId)
@@ -61,13 +90,16 @@ export default function JuegoTriviaLocal() {
       {respuesta && <p className="text-lg font-medium mb-4">{respuesta}</p>}
 
       {completada && (
-        <a
-          href="/tirada"
+        <button
+          onClick={() => {
+            window.parent.postMessage({ tipo: 'accionCompletada' }, '*')
+          }}
           className="inline-block mt-4 px-6 py-2 rounded bg-green-500 text-white font-bold hover:bg-green-600"
         >
           ✅ Completar acción
-        </a>
+        </button>
       )}
+
     </div>
   )
 }

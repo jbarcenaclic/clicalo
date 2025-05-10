@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 
 import PageContainer from '@/components/PageContainer'
 import PrimaryButton from '@/components/PrimaryButton'
@@ -7,6 +7,7 @@ import { DashboardRuta } from '@/components/DashboardRutaCarrusel'
 import PushSubscription from '@/components/PushSubscription'
 import { firmarUserId } from '@/utils/firmarUserId.client'
 import { Dialog } from '@headlessui/react'
+import JuegoTriviaLocalEmbedded from '@/components/JuegoTriviaLocalEmbedded'
 
 
 type Action = {
@@ -34,7 +35,17 @@ export default function TiradaContent() {
   const [rewardValue, setRewardValue] = useState(0.035)
   const [transitioning, setTransitioning] = useState(false)
   const [showBienvenida, setShowBienvenida] = useState(false)
+  const iframeRef = useRef<HTMLIFrameElement | null>(null)
 
+
+  useEffect(() => {
+    if (currentAction) {
+      console.log('[UI] Acción actual:', currentAction)
+      console.log('[UI] URL inicio:', currentAction.url_inicio)
+      console.log('[UI] Tipo de acción:', currentAction.tipo)
+    }
+  }, [currentAction])
+  
 
   const [progreso, setProgreso] = useState<Progreso>({
     tiradasCompletadas: 0,
@@ -93,7 +104,7 @@ export default function TiradaContent() {
     } catch (e) {
       console.error('[tirada] error en iniciarTirada:', e)
     }
-  }, [])
+  }, [progreso.tiradasCompletadas])
 
   const cargarSiguienteAccion = useCallback(async (tid: string, uid: string) => {
     try {
@@ -119,8 +130,46 @@ export default function TiradaContent() {
     } catch (e) {
       console.error('[tirada] error en cargarSiguienteAccion:', e)
     }
-  }, [])
+  }, [obtenerProgreso, iniciarTirada])
 
+  useEffect(() => {
+    const handleMessage = async (event: MessageEvent) => {
+      if (event.data?.tipo === 'accionCompletada') {
+        console.log('[tirada] Acción local completada vía postMessage')
+  
+        if (currentAction?.id) {
+          try {
+            await fetch('/api/complete-action', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                action_id: currentAction.id,
+                valorVisible: rewardValue,
+                duration: 5,
+              }),
+            })
+            console.log('[tirada] Acción marcada como completada desde postMessage')
+          } catch (err) {
+            console.error('[tirada] Error al completar acción local vía postMessage', err)
+          }
+        }
+  
+        if (tiradaId && userId) {
+          await cargarSiguienteAccion(tiradaId, userId)
+          await obtenerProgreso(userId)
+        }
+      }
+      if (event.data?.tipo === 'ajustarAltura' && iframeRef.current) {
+        iframeRef.current.style.height = `${event.data.altura}px`
+      }
+
+    }
+  
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [tiradaId, userId, currentAction, rewardValue, cargarSiguienteAccion, obtenerProgreso])
+  
+ 
   useEffect(() => {
     let mounted = true
     const iniciar = async () => {
@@ -228,14 +277,43 @@ export default function TiradaContent() {
             <div className="text-4xl animate-bounce">🎯</div>
           </div>
         )}
-
-        {tiradasRestantes && !tiradaDone && currentAction && (
+       
+       {tiradasRestantes && !tiradaDone && currentAction && (
           <>
             <div className="p-4 bg-white rounded shadow mb-4">
               <p className="text-xl font-bold text-clicalo-azul">🔹 Acción {currentAction.orden}</p>
               <p className="text-gray-600 text-sm">(tipo: {currentAction.tipo})</p>
             </div>
-            <PrimaryButton onClick={completarAccion}>✅ Completar acción</PrimaryButton>
+
+            {currentAction.network === 'Local' ? (
+              <>
+                <JuegoTriviaLocalEmbedded
+                  actionId={currentAction.id}
+                  onComplete={async () => {
+                    if (tiradaId && userId) {
+                      await cargarSiguienteAccion(tiradaId, userId)
+                      await obtenerProgreso(userId)
+                    }
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <iframe
+                  src={currentAction.url_inicio}
+                  width="100%"
+                  height="600"
+                  allow="fullscreen"
+                  sandbox="allow-same-origin allow-scripts allow-forms"
+                  className="w-full h-[600px] rounded border shadow"
+                />
+                <p className="text-sm text-white/80 mt-4">
+                  Haz clic en “✅ Completar acción” solo cuando hayas terminado la encuesta.
+                </p>
+                <PrimaryButton onClick={completarAccion}>✅ Completar acción</PrimaryButton>
+              </>
+            )}
+
           </>
         )}
 
@@ -262,21 +340,6 @@ export default function TiradaContent() {
                 ⬅️ Volver al inicio
               </button>
             </div>
-
-            {currentAction?.url_inicio && (
-              <iframe
-                src={currentAction.url_inicio}
-                width="100%"
-                height="600"
-                allow="fullscreen"
-                sandbox="allow-same-origin allow-scripts allow-forms"
-                className="w-full h-[600px] rounded border shadow"
-              />
-            )}
-
-            <p className="text-sm text-gray-500 mt-4">
-              Haz clic en “✅ Completar acción” solo cuando hayas terminado la encuesta.
-            </p>
           </div>
         )}
 
@@ -285,6 +348,23 @@ export default function TiradaContent() {
           <p className="mt-6 text-white bg-green-600 inline-block px-4 py-2 rounded shadow font-semibold">{message}</p>
         )}
       </div>
+      <DebugPanel action={currentAction} />
     </PageContainer>
+  )
+}
+
+function DebugPanel({ action }: { action: Action | null }) {
+  if (!action) return null
+
+  return (
+    <div className="mt-6 text-left text-xs bg-black/70 text-white p-4 rounded shadow">
+      <p className="font-bold text-sm mb-1">🛠 Debug Acción Actual</p>
+      <p><strong>ID:</strong> {action.id}</p>
+      <p><strong>Orden:</strong> {action.orden}</p>
+      <p><strong>Tipo:</strong> {action.tipo}</p>
+      <p><strong>Network:</strong> {action.network}</p>
+      <p><strong>Payout estimado:</strong> {action.payout_estimado}</p>
+      <p><strong>URL inicio:</strong> {action.url_inicio}</p>
+    </div>
   )
 }
