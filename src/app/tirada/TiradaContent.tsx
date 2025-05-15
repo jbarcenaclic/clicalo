@@ -277,10 +277,6 @@ export default function TiradaContent() {
        
        {tiradasRestantes && !tiradaDone && currentAction && (
           <>
-            <div className="p-4 bg-white rounded shadow mb-4">
-              <p className="text-xl font-bold text-clicalo-azul">🔹 Acción {currentAction.orden}</p>
-              <p className="text-gray-600 text-sm">(tipo: {currentAction.tipo})</p>
-            </div>
 
             {currentAction.network === 'Local' ? (
               <>
@@ -341,10 +337,6 @@ export default function TiradaContent() {
           </div>
         )}
 
-
-        {message && tiradasRestantes && !tiradaDone && (
-          <p className="mt-6 text-white bg-green-600 inline-block px-4 py-2 rounded shadow font-semibold">{message}</p>
-        )}
       </div>
       <DebugPanel action={currentAction} />
 

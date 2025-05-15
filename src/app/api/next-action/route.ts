@@ -22,7 +22,7 @@ export async function POST( req: Request ) {
   if (!user_id) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   }
-  console.log('[start-tirada] user_id:', user_id)
+  console.log('[next-action] user_id:', user_id)
   if (!user_id) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   }

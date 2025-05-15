@@ -54,7 +54,7 @@ export async function crearSiguienteAccion(tirada_id: string, user_id: string): 
     tipo: 'trivia',
     network: 'Local',
     external_id: null,
-    url_inicio: `/juego-trivia-local?action_id=${tirada_id}`,
+    url_inicio: `/local`,
     payout_estimado: 0.02,
     orden
   }])
