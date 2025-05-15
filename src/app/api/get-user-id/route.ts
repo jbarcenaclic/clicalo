@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
-  console.log('[get-user-id] headers:', req.headers)
+  // console.log('[get-user-id] headers:', req.headers)
 
   const user_id = req.cookies.get('user_id')?.value
 

@@ -86,6 +86,10 @@ export default function TiradaContent() {
       const { action } = json
 
       setCurrentAction(action)
+      if (!action) {
+        console.warn('[tirada] Acción inválida o vacía:', action)
+        return
+      }
       setRewardValue(action.payout_estimado || 0.035)
       setMessage(`✅ Acción ${action.orden} de 3 completada`)
     } catch (e) {
@@ -281,6 +285,7 @@ export default function TiradaContent() {
             {currentAction.network === 'Local' ? (
               <>
                 <JuegoTriviaLocalEmbedded
+                  key={currentAction.id}
                   actionId={currentAction.id}
                   onComplete={async () => {
                     if (tiradaId && userId) {
@@ -341,9 +346,7 @@ export default function TiradaContent() {
           <p className="mt-6 text-white bg-green-600 inline-block px-4 py-2 rounded shadow font-semibold">{message}</p>
         )}
       </div>
-      {process.env.NODE_ENV === 'development' && (
-        <DebugPanel action={currentAction} />
-      )}
+      <DebugPanel action={currentAction} />
 
     </PageContainer>
   )
