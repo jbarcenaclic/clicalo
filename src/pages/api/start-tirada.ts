@@ -4,15 +4,25 @@ import { supabase } from '@/lib/supabaseClient'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getFechaLocal } from '@/lib/fechaLocal'
 
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' })
   }
-  const { user_id } = req.body
-  
+
+  // Obtener el user_id del cliente
+  // En APIs, necesitas obtener user_id desde cookies o encabezados, NO con fetch
+  const user_id = req.cookies['user_id'] // o usa alguna forma de validación JWT/session
+
   if (!user_id) {
-    return res.status(400).json({ error: 'Falta user_id' })
+    return res.status(401).json({ error: 'No autorizado' })
   }
+
+  console.log('[start-tirada] user_id:', user_id)
+  if (!user_id) {
+    return res.status(401).json({ error: 'No autorizado' })
+  }
+  // Obtener la zona horaria del usuario
 
   const { data: userData } = await supabase
   .from('users')
@@ -27,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   console.log('[start-tirada] timezone:', userData?.timezone)
   // Obtener la zona horaria del usuario
 
-  const { fecha:fechaLocal, hora } = getFechaLocal(userData)
+  const { fecha:fechaLocal, } = getFechaLocal(userData)
 
   console.log('[start-tirada] fecha local:', fechaLocal)
   // Obtener tiradas del día

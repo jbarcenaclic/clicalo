@@ -8,6 +8,7 @@ import PushSubscription from '@/components/PushSubscription'
 import { firmarUserId } from '@/utils/firmarUserId.client'
 import { Dialog } from '@headlessui/react'
 import JuegoTriviaLocalEmbedded from '@/components/JuegoTriviaLocalEmbedded'
+import DebugPanel from '@/components/DebugPanel'
 
 
 type Action = {
@@ -62,7 +63,7 @@ export default function TiradaContent() {
     }
   }, [])
 
-  const obtenerProgreso = async (userId: string): Promise<Progreso | undefined> => {
+  const obtenerProgreso = useCallback(async (userId: string): Promise<Progreso | undefined> => {
     try {
       const firma = firmarUserId(userId)
       const res = await fetch(`/api/user-progress?user_id=${userId}&sig=${firma}`)
@@ -72,7 +73,25 @@ export default function TiradaContent() {
     } catch (e) {
       console.error('[tirada] error al obtener progreso', e)
     }
-  }
+  }, [])
+
+  const cargarSiguienteAccion = useCallback(async (tid: string,) => {
+    try {
+      const res = await fetch('/api/next-action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tirada_id: tid }),
+      })
+      const json = await res.json()
+      const { action } = json
+
+      setCurrentAction(action)
+      setRewardValue(action.payout_estimado || 0.035)
+      setMessage(`✅ Acción ${action.orden} de 3 completada`)
+    } catch (e) {
+      console.error('[tirada] error en cargarSiguienteAccion:', e)
+    }
+  }, [])
 
   const iniciarTirada = useCallback(async (uid: string) => {
     if (progreso.tiradasCompletadas >= 10) {
@@ -100,37 +119,11 @@ export default function TiradaContent() {
       setTiradaId(data.tirada_id)
       setTiradaDone(false)
       setCurrentAction(null)
-      await cargarSiguienteAccion(data.tirada_id, uid)
+      await cargarSiguienteAccion(data.tirada_id)
     } catch (e) {
       console.error('[tirada] error en iniciarTirada:', e)
     }
-  }, [progreso.tiradasCompletadas])
-
-  const cargarSiguienteAccion = useCallback(async (tid: string, uid: string) => {
-    try {
-      const firma = firmarUserId(uid)
-      const res = await fetch(`/api/next-action?tirada_id=${tid}&user_id=${uid}&sig=${firma}`)
-      const json = await res.json()
-      const { action } = json
-
-      if (!action) {
-        setTiradaDone(true)
-        setCurrentAction(null)
-        setMessage('')
-        const nuevoProgreso = await obtenerProgreso(uid)
-        if (nuevoProgreso && nuevoProgreso.tiradasCompletadas < 10) {
-          await iniciarTirada(uid)
-        }
-        return
-      }
-
-      setCurrentAction(action)
-      setRewardValue(action.payout_estimado || 0.035)
-      setMessage(`✅ Acción ${action.orden} de 3 completada`)
-    } catch (e) {
-      console.error('[tirada] error en cargarSiguienteAccion:', e)
-    }
-  }, [obtenerProgreso, iniciarTirada])
+  }, [progreso.tiradasCompletadas, cargarSiguienteAccion])
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
@@ -155,7 +148,7 @@ export default function TiradaContent() {
         }
   
         if (tiradaId && userId) {
-          await cargarSiguienteAccion(tiradaId, userId)
+          await cargarSiguienteAccion(tiradaId)
           await obtenerProgreso(userId)
         }
       }
@@ -189,7 +182,7 @@ export default function TiradaContent() {
     return () => {
       mounted = false
     }
-  }, [iniciarTirada])
+  }, [iniciarTirada, obtenerProgreso])
 
   const completarAccion = async () => {
     if (!currentAction) return
@@ -209,7 +202,7 @@ export default function TiradaContent() {
     }
     setTransitioning(false)
     if (tiradaId && userId) {
-      await cargarSiguienteAccion(tiradaId, userId)
+      await cargarSiguienteAccion(tiradaId)
       await obtenerProgreso(userId)
     }
   }
@@ -291,7 +284,7 @@ export default function TiradaContent() {
                   actionId={currentAction.id}
                   onComplete={async () => {
                     if (tiradaId && userId) {
-                      await cargarSiguienteAccion(tiradaId, userId)
+                      await cargarSiguienteAccion(tiradaId)
                       await obtenerProgreso(userId)
                     }
                   }}
@@ -348,23 +341,10 @@ export default function TiradaContent() {
           <p className="mt-6 text-white bg-green-600 inline-block px-4 py-2 rounded shadow font-semibold">{message}</p>
         )}
       </div>
-      <DebugPanel action={currentAction} />
+      {process.env.NODE_ENV === 'development' && (
+        <DebugPanel action={currentAction} />
+      )}
+
     </PageContainer>
-  )
-}
-
-function DebugPanel({ action }: { action: Action | null }) {
-  if (!action) return null
-
-  return (
-    <div className="mt-6 text-left text-xs bg-black/70 text-white p-4 rounded shadow">
-      <p className="font-bold text-sm mb-1">🛠 Debug Acción Actual</p>
-      <p><strong>ID:</strong> {action.id}</p>
-      <p><strong>Orden:</strong> {action.orden}</p>
-      <p><strong>Tipo:</strong> {action.tipo}</p>
-      <p><strong>Network:</strong> {action.network}</p>
-      <p><strong>Payout estimado:</strong> {action.payout_estimado}</p>
-      <p><strong>URL inicio:</strong> {action.url_inicio}</p>
-    </div>
   )
 }

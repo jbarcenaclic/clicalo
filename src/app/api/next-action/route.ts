@@ -1,28 +1,31 @@
 // src/app/api/next-action/route.ts
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabaseClient'
-import { obtenerAccionDeBitLabs } from '@/lib/bitlabs'
-import { verificarFirma } from '@/utils/auth'
+//import { obtenerAccionDeBitLabs } from '@/lib/bitlabs'
 import { crearSiguienteAccion } from '@/utils/crearSiguienteAccion'
+import { cookies } from 'next/headers'
 
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url!)
-  const user_id = searchParams.get('user_id')
-  const tirada_id = searchParams.get('tirada_id')
-  const sig = searchParams.get('sig')
-  console.log('[next-action] user_id recibido:', user_id)
-  console.log('[next-action] sig recibido:', sig)
-  console.log('[next-action] tirada_id recibido:', tirada_id)
+export async function POST( req: Request ) {
+  const { tirada_id } = await req.json()
+  console.log('>> Next action:', { tirada_id })
+
+  if (!tirada_id) {
+    return NextResponse.json({ error: 'Falta tirada_id' }, { status: 400 })
+  }
+  // Obtener el user_id del cliente
+
+  const cookieStore = await cookies()
+  const user_id = cookieStore.get('user_id')?.value
   
 
-  if (!user_id || !tirada_id || !sig) {
-    return NextResponse.json({ error: 'Parámetros incompletos' }, { status: 400 })
+  if (!user_id) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   }
-  if (!verificarFirma(user_id, sig)) {
-    return NextResponse.json({ error: 'Firma inválida' }, { status: 401 })
+  console.log('[start-tirada] user_id:', user_id)
+  if (!user_id) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   }
-
   const { data: accionesTirada, error } = await supabase
     .from('acciones')
     .select('*')

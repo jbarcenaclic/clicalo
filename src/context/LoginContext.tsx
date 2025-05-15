@@ -1,3 +1,4 @@
+// src/context/LoginContext.tsx
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
@@ -33,7 +34,8 @@ export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
           setUserId(json.user_id)
           setPhone(json.phone)
         }
-      } catch (_) {
+      } catch (err) {
+        console.error('Login error:', err)
         setUserId(null)
         setPhone(null)
       }
