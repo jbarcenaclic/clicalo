@@ -10,7 +10,7 @@ import { Dialog } from '@headlessui/react'
 import JuegoTriviaLocalEmbedded from '@/components/JuegoTriviaLocalEmbedded'
 import DebugPanel from '@/components/DebugPanel'
 import AccionFrame from '@/components/AccionFrame'
-import InstruccionCompletar from '@/components/InstruccionCompletar'
+//import InstruccionCompletar from '@/components/InstruccionCompletar'
 import TiradaCompletada from '@/components/TiradaCompletada'
 import { MetaAlcanzada } from '@/components/MetaAlcanzada'
 import { ResumenCobro } from '@/components/ResumenCobro'
@@ -32,7 +32,6 @@ export default function TiradaContent() {
   const [currentAction, setCurrentAction] = useState<Action | null>(null)
   const [tiradaDone, setTiradaDone] = useState(false)
   const [rewardValue, setRewardValue] = useState(0.035)
-  const [transitioning, setTransitioning] = useState(false)
   const [showBienvenida, setShowBienvenida] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
 
@@ -185,29 +184,6 @@ export default function TiradaContent() {
     }
   }, [iniciarTirada, obtenerProgreso])
 
-  const completarAccion = async () => {
-    if (!currentAction) return
-    setTransitioning(true)
-    try {
-      await fetch('/api/complete-action', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          valorVisible: rewardValue,
-          action_id: currentAction.id,
-          duration: 5,
-        }),
-      })
-    } catch (err) {
-      console.error('[tirada] Error en complete-action:', err)
-    }
-    setTransitioning(false)
-    if (tiradaId && userId) {
-      await cargarSiguienteAccion(tiradaId)
-      await obtenerProgreso(userId)
-    }
-  }
-
   function generarMensajeCompartir() {
     const base = '¡Ya completé mis 10 tiradas de hoy en CLÍCALO! 💰'
   
@@ -268,7 +244,7 @@ export default function TiradaContent() {
         />
         </div>
 
-        {tiradasRestantes && transitioning && <TiradaCompletada />}
+        {tiradasRestantes && <TiradaCompletada />}
        
        {tiradasRestantes && !tiradaDone && currentAction && (
           <>
@@ -297,7 +273,7 @@ export default function TiradaContent() {
                       sandbox="allow-same-origin allow-scripts allow-forms"
                       className="w-full h-[600px] rounded border shadow"
                     />
-                    <InstruccionCompletar onClick={completarAccion} />
+                    
 
 
                   </>
