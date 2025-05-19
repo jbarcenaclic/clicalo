@@ -30,8 +30,10 @@ export default function TiradaContent() {
   const [userId, setUserId] = useState<string | null>(null)
   const [tiradaId, setTiradaId] = useState<string | null>(null)
   const [currentAction, setCurrentAction] = useState<Action | null>(null)
+  const [message, setMessage] = useState('')
   const [tiradaDone, setTiradaDone] = useState(false)
   const [rewardValue, setRewardValue] = useState(0.035)
+  const [transitioning, setTransitioning] = useState(false)
   const [showBienvenida, setShowBienvenida] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
 
@@ -88,6 +90,7 @@ export default function TiradaContent() {
         return
       }
       setRewardValue(action.payout_estimado || 0.035)
+      setMessage(`✅ Acción ${action.orden} de 3 completada`)
     } catch (e) {
       console.error('[tirada] error en cargarSiguienteAccion:', e)
     }
@@ -184,6 +187,8 @@ export default function TiradaContent() {
     }
   }, [iniciarTirada, obtenerProgreso])
 
+  
+
   function generarMensajeCompartir() {
     const base = '¡Ya completé mis 10 tiradas de hoy en CLÍCALO! 💰'
   
@@ -244,52 +249,59 @@ export default function TiradaContent() {
         />
         </div>
 
-        {tiradasRestantes && <TiradaCompletada />}
+        {tiradasRestantes && transitioning && <TiradaCompletada />}
        
-       {tiradasRestantes && !tiradaDone && currentAction && (
-          <>
-            <div className="bg-white rounded-xl shadow-lg p-4 border-2 border-clicalo-azul mb-6">
-              <AccionFrame>
-                {currentAction.network === 'Local' ? (
-                  <>
-                    <JuegoTriviaLocalEmbedded
-                      key={currentAction.id}
-                      actionId={currentAction.id}
-                      onComplete={async () => {
-                        if (tiradaId && userId) {
-                          await cargarSiguienteAccion(tiradaId)
-                          await obtenerProgreso(userId)
-                        }
-                      }}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <iframe
-                      src={currentAction.url_inicio}
-                      width="100%"
-                      height="600"
-                      allow="fullscreen"
-                      sandbox="allow-same-origin allow-scripts allow-forms"
-                      className="w-full h-[600px] rounded border shadow"
-                    />
-                    
-
-
-                  </>
+        {tiradasRestantes && !tiradaDone && currentAction && (
+            <>
+              <div className="bg-white rounded-xl shadow-lg p-4 border-2 border-clicalo-azul mb-6">
+                {message && (
+                  <div className="text-sm text-green-600 text-center mb-4">
+                    {message}
+                  </div>
                 )}
-              </AccionFrame>
-            </div>
-          </>
-        )}
+                <AccionFrame>
+                  {currentAction.network === 'Local' ? (
+                    <>
+                      <JuegoTriviaLocalEmbedded
+                        key={currentAction.id}
+                        actionId={currentAction.id}
+                        onComplete={async () => {
+                          if (tiradaId && userId) {
+                            setTransitioning(true)
+                            setTimeout(() => setTransitioning(false), 1000)
+                            await cargarSiguienteAccion(tiradaId)
+                            await obtenerProgreso(userId)
+                          }
+                        }}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <iframe
+                        src={currentAction.url_inicio}
+                        width="100%"
+                        height="600"
+                        allow="fullscreen"
+                        sandbox="allow-same-origin allow-scripts allow-forms"
+                        className="w-full h-[600px] rounded border shadow"
+                      />
+                          
 
-        {!tiradasRestantes && (
-          <MetaAlcanzada
-            rewardTotal={rewardValue * 10}
-            onShare={compartirProgreso}
-            onReturn={() => (window.location.href = '/')}
-          />
-        )}
+
+                    </>
+                  )}
+                </AccionFrame>
+              </div>
+            </>
+          )}
+
+          {!tiradasRestantes && (
+            <MetaAlcanzada
+              rewardTotal={rewardValue * 10}
+              onShare={compartirProgreso}
+              onReturn={() => (window.location.href = '/')}
+            />
+          )}
 
       </div>
       <ResumenCobro
