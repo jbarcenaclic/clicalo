@@ -13,6 +13,21 @@ export type GeoInfo = {
   
   export async function getGeolocation(): Promise<GeoInfo | null> {
     try {
+      if (process.env.NODE_ENV === 'development') {
+        return {
+          ip: '127.0.0.1',
+          country_code: 'MX',
+          country_name: 'México',
+          timezone: 'America/Mexico_City',
+          security: {
+            vpn: false,
+            proxy: false,
+            tor: false,
+            hosting: false,
+          },
+        }
+      }
+  
       const res = await fetch('https://ipapi.co/json/')
       if (!res.ok) throw new Error('Error al consultar ipapi')
       const data = await res.json()
@@ -34,4 +49,5 @@ export type GeoInfo = {
       return null
     }
   }
+  
   

@@ -16,7 +16,6 @@ export function usePaisIdioma() {
     setIdiomaState(nuevo)
     setCookie('idioma', nuevo)
 
-    // 👉 Si el usuario está logueado, actualizar en Supabase
     if (userId) {
       try {
         await fetch('/api/update-idioma', {
@@ -29,6 +28,9 @@ export function usePaisIdioma() {
         console.error('Error actualizando idioma en Supabase:', err)
       }
     }
+  
+    // ✅ Fuerza recarga para aplicar cambio de idioma
+    window.location.reload()
   }
 
   useEffect(() => {

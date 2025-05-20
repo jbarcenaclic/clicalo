@@ -29,6 +29,7 @@ function checkCurrencyUsage() {
     const lines = fs.readFileSync(file, 'utf-8').split('\n')
     lines.forEach((line, i) => {
       if (line.includes('formatCurrency')) return
+      if (file.includes('/i18n/texts.ts') && line.includes('case ') || line.includes('currencyMap')) return
       if (pattern.test(line)) {
         issues.push({ file, line: i + 1, text: line.trim() })
       }

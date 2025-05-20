@@ -16,6 +16,7 @@ export default function Home() {
   const [phone, setPhone] = useState('')
   const [loading, setLoading] = useState(false)
   const { idioma, setIdioma, pais, setPais } = usePaisIdioma()
+  const rewardBase = 0.045
 
   useEffect(() => {
     const detectarPais = async () => {
@@ -118,7 +119,7 @@ export default function Home() {
       {isLoggedIn && (
         <section className="text-center">
           <p className="mb-2 text-lg text-clicalo-grisTexto">{textos[idioma].registrados}</p>
-          <p className="mb-6 text-lg text-clicalo-grisTexto">{textos[idioma].stats}</p>
+          <p className="mb-6 text-lg text-clicalo-grisTexto">{textos[idioma].stats(rewardBase, pais ?? 'US', idioma)}</p>
           <Link href="/tirada">
             <PrimaryButton>{textos[idioma].irATirada}</PrimaryButton>
           </Link>

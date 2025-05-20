@@ -1,122 +1,130 @@
 // src/i18n/texts.ts
 
 export const textos = {
-    es: {
-      titulo: 'Convierte tu tiempo digital en recompensas reales.',
-      comoFunciona: '¿Cómo funciona?',
-      pasos: [
-        'Realiza acciones como ver anuncios o responder encuestas',
-        'Recibe tus recompensas en efectivo cada mes, fácil y seguro',
-        'No descargas nada. Funciona directo desde tu navegador',
-        'No necesitas cuenta de banco ni dar tus datos personales',
-      ],
-      placeholder: 'Tu número (ej. +52(55)1234-5678)',
-      boton: 'Empieza ya!',
-      mensaje: 'Pon tu número y listo!',
-      cargando: 'Cargando...',
-      registrados: '+1,000 usuarios registrados',
-      stats: '85% tasa de finalización · $0.045 USD por acción',
-      irATirada: 'Ir a mi tirada',
-      bienvenidaTitulo: '🎉 ¡Bienvenido!',
-      bienvenidaTexto: (valor: number, pais: string, idioma: string) =>
-        `Hoy puedes ganar hasta <strong>${formatCurrency(valor, pais, idioma)} por acción</strong>.<br />¡Haz tus 10 tiradas y acumula racha!`,      bienvenidaBoton: '¡Vamos!',
-      mensajeAccionCompletada: (orden: number) => `✅ Acción ${orden} de 3 completada`,
-      compartirBase: '¡Ya completé mis 10 tiradas de hoy en CLÍCALO! 💰',
-      compartirRacha: (dias: number) => `🔥 Llevo ${dias} días seguidos ganando en CLÍCALO. ¡Súmate tú también!`,
-      compartirGanancia: (cantidad: number) => `💸 Esta semana gané $${cantidad.toFixed(2)} en CLÍCALO solo por hacer clics.`,
-      compartirError: 'No se pudo compartir. Intenta copiar el link manualmente.',
-      compartirNoSoportado: 'Tu dispositivo no soporta compartir directamente. Puedes copiar el enlace manualmente 😉',
-      progresoHoy: 'Hoy puedes ganar hasta:',
-      progresoAvance: (hechas: number, total: number) => `Avance de tu día: ${hechas} de ${total} acciones completadas`,
-      cobroHasAcumulado: 'Has acumulado',
-      cobroPodrasCobrar: (umbral: number, restante: number) => `Podrás cobrar al llegar a $${umbral} • Te faltan $${restante}`,
-      cobroSaldoProceso: 'Saldo en proceso',
-      cobroSaldoValidando: 'Tus acciones recientes están en validación',
-      cobroBotonHabilitado: '¡Cobrar Ahora!',
-      cobroBotonDeshabilitado: (restante: number) => `Aún no puedes cobrar. Te faltan $${restante}`,
-    },
-    en: {
-      titulo: 'Turn your screen time into real rewards.',
-      comoFunciona: 'How it works',
-      pasos: [
-        'Complete tasks like watching ads or taking surveys',
-        'Get paid monthly in cash, fast and safe',
-        'No downloads. Works directly in your browser',
-        'No bank account or personal info required',
-      ],
-      placeholder: 'Your number (e.g. +1(123)456-7890',
-      boton: 'Get started!',
-      mensaje: 'Enter your number to begin!',
-      cargando: 'Loading...',
-      registrados: '+1,000 registered users',
-      stats: '85% completion rate · $0.045 USD per action',
-      irATirada: 'Go to my turn',
-      bienvenidaTitulo: '🎉 Welcome!',
-      bienvenidaTexto: (valor: number, pais: string, idioma: string) =>`Today you can earn up to <strong>${formatCurrency(valor, pais, idioma)} per action</strong>.<br />Complete your 10 turns and keep your streak!`,
-      bienvenidaBoton: 'Let’s go!',
-      mensajeAccionCompletada: (orden: number) => `✅ Action ${orden} of 3 completed`,
-      compartirBase: 'I just finished my 10 daily turns on CLÍCALO! 💰',
-      compartirRacha: (dias: number) => `🔥 I’ve been winning for ${dias} days in a row on CLÍCALO. Join me!`,
-      compartirGanancia: (cantidad: number) => `💸 I earned $${cantidad.toFixed(2)} this week just clicking around on CLÍCALO.`,
-      compartirError: 'Sharing failed. Try copying the link manually.',
-      compartirNoSoportado: 'Your device does not support sharing. Copy the link manually 😉',
-      progresoHoy: 'Today you can earn up to:',
-      progresoAvance: (hechas: number, total: number) => `Your daily progress: ${hechas} of ${total} actions completed`,
-      cobroHasAcumulado: 'You have accumulated',
-      cobroPodrasCobrar: (umbral: number, restante: number) => `You can withdraw at $${umbral} • $${restante} to go`,
-      cobroSaldoProceso: 'Pending balance',
-      cobroSaldoValidando: 'Your recent actions are being validated',
-      cobroBotonHabilitado: 'Withdraw Now!',
-      cobroBotonDeshabilitado: (restante: number) => `You can’t withdraw yet. You need $${restante} more`,
-    },
+  es: {
+    titulo: 'Convierte tu tiempo digital en recompensas reales.',
+    comoFunciona: '¿Cómo funciona?',
+    pasos: [
+      'Realiza acciones como ver anuncios o responder encuestas',
+      'Recibe tus recompensas en efectivo cada mes, fácil y seguro',
+      'No descargas nada. Funciona directo desde tu navegador',
+      'No necesitas cuenta de banco ni dar tus datos personales',
+    ],
+    placeholder: 'Tu número (ej. +52(55)1234-5678)',
+    boton: 'Empieza ya!',
+    mensaje: 'Pon tu número y listo!',
+    cargando: 'Cargando...',
+    registrados: '+1,000 usuarios registrados',
+    stats: (valor: number, pais: string, idioma: string) =>
+      `85% tasa de finalización · ${formatCurrency(valor, pais, idioma)} por acción`,
+    
+    irATirada: 'Ir a mi tirada',
+    bienvenidaTitulo: '🎉 ¡Bienvenido!',
+    bienvenidaTexto: (valor: number, pais: string, idioma: string) =>
+      `Hoy puedes ganar hasta <strong>${formatCurrency(valor, pais, idioma)} por acción</strong>.<br />¡Haz tus 10 tiradas y acumula racha!`,      bienvenidaBoton: '¡Vamos!',
+    mensajeAccionCompletada: (orden: number) => `✅ Acción ${orden} de 3 completada`,
+    compartirBase: '¡Ya completé mis 10 tiradas de hoy en CLÍCALO! 💰',
+    compartirRacha: (dias: number) => `🔥 Llevo ${dias} días seguidos ganando en CLÍCALO. ¡Súmate tú también!`,
+    compartirGanancia: (cantidad: number) => `💸 Esta semana gané $${cantidad.toFixed(2)} en CLÍCALO solo por hacer clics.`,
+    compartirError: 'No se pudo compartir. Intenta copiar el link manualmente.',
+    compartirNoSoportado: 'Tu dispositivo no soporta compartir directamente. Puedes copiar el enlace manualmente 😉',
+    progresoHoy: 'Hoy puedes ganar hasta:',
+    progresoAvance: (hechas: number, total: number) => `Avance de tu día: ${hechas} de ${total} acciones completadas`,
+    cobroHasAcumulado: 'Has acumulado',
+    cobroPodrasCobrar: (umbral: number, restante: number) => `Podrás cobrar al llegar a $${umbral} • Te faltan $${restante}`,
+    cobroSaldoProceso: 'Saldo en proceso',
+    cobroSaldoValidando: 'Tus acciones recientes están en validación',
+    cobroBotonHabilitado: '¡Cobrar Ahora!',
+    cobroBotonDeshabilitado: (restante: number) => `Aún no puedes cobrar. Te faltan $${restante}`,
+  },
+  en: {
+    titulo: 'Turn your screen time into real rewards.',
+    comoFunciona: 'How it works',
+    pasos: [
+      'Complete tasks like watching ads or taking surveys',
+      'Get paid monthly in cash, fast and safe',
+      'No downloads. Works directly in your browser',
+      'No bank account or personal info required',
+    ],
+    placeholder: 'Your number (e.g. +1(123)456-7890',
+    boton: 'Get started!',
+    mensaje: 'Enter your number to begin!',
+    cargando: 'Loading...',
+    registrados: '+1,000 registered users',
+    stats: (valor: number, pais: string, idioma: string) =>
+      `85% completion rate · ${formatCurrency(valor, pais, idioma)} per action`,
+    
+    irATirada: 'Go to my turn',
+    bienvenidaTitulo: '🎉 Welcome!',
+    bienvenidaTexto: (valor: number, pais: string, idioma: string) =>`Today you can earn up to <strong>${formatCurrency(valor, pais, idioma)} per action</strong>.<br />Complete your 10 turns and keep your streak!`,
+    bienvenidaBoton: 'Let’s go!',
+    mensajeAccionCompletada: (orden: number) => `✅ Action ${orden} of 3 completed`,
+    compartirBase: 'I just finished my 10 daily turns on CLÍCALO! 💰',
+    compartirRacha: (dias: number) => `🔥 I’ve been winning for ${dias} days in a row on CLÍCALO. Join me!`,
+    compartirGanancia: (cantidad: number) => `💸 I earned $${cantidad.toFixed(2)} this week just clicking around on CLÍCALO.`,
+    compartirError: 'Sharing failed. Try copying the link manually.',
+    compartirNoSoportado: 'Your device does not support sharing. Copy the link manually 😉',
+    progresoHoy: 'Today you can earn up to:',
+    progresoAvance: (hechas: number, total: number) => `Your daily progress: ${hechas} of ${total} actions completed`,
+    cobroHasAcumulado: 'You have accumulated',
+    cobroPodrasCobrar: (umbral: number, restante: number) => `You can withdraw at $${umbral} • $${restante} to go`,
+    cobroSaldoProceso: 'Pending balance',
+    cobroSaldoValidando: 'Your recent actions are being validated',
+    cobroBotonHabilitado: 'Withdraw Now!',
+    cobroBotonDeshabilitado: (restante: number) => `You can’t withdraw yet. You need $${restante} more`,
+  },
+}
+
+export function getCurrencyLabel(pais: string | null): string {
+  switch (pais) {
+    case 'MX': return 'MXN'
+    case 'US': return 'USD'
+    case 'CO': return 'COP'
+    case 'BR': return 'BRL'
+    default: return 'USD'
+  }
+}
+
+export function getCurrencySymbol(pais: string | null): string {
+  switch (pais) {
+    case 'MX': return '$'
+    case 'US': return '$'
+    case 'CO': return '$'
+    case 'BR': return 'R$'
+    case 'CL': return '$'
+    case 'AR': return '$'
+    case 'PE': return 'S/'
+    case 'PH': return '₱'
+    default: return '$'
+  }
+}
+
+export function formatCurrency(
+  valor: number,
+  pais: string | null = 'US',
+  idioma: string | null = 'en'
+): string {
+  const currencyMap: Record<string, string> = {
+    MX: 'MXN',
+    US: 'USD',
+    CO: 'COP',
+    BR: 'BRL',
+    CL: 'CLP',
+    AR: 'ARS',
+    PE: 'PEN',
+    PH: 'PHP',
   }
 
-  export function getCurrencyLabel(pais: string | null): string {
-    switch (pais) {
-      case 'MX': return 'MXN'
-      case 'US': return 'USD'
-      case 'CO': return 'COP'
-      case 'BR': return 'BRL'
-      default: return 'USD'
-    }
-  }
-  export function getCurrencySymbol(pais: string | null): string {
-    switch (pais) {
-      case 'MX': return '$'
-      case 'US': return '$'
-      case 'CO': return '$'
-      case 'BR': return 'R$'
-      case 'CL': return '$'
-      case 'AR': return '$'
-      case 'PE': return 'S/'
-      case 'PH': return '₱'
-      default: return '$'
-    }
-  }
+  const currency = currencyMap[pais ?? 'US'] || 'USD'
 
-  export function formatCurrency(
-    valor: number,
-    pais: string | null = 'US',
-    idioma: string | null = 'en'
-  ): string {
-    const currencyMap: Record<string, string> = {
-      MX: 'MXN',
-      US: 'USD',
-      CO: 'COP',
-      BR: 'BRL',
-      CL: 'CLP',
-      AR: 'ARS',
-      PE: 'PEN',
-      PH: 'PHP',
-    }
-  
-    const currency = currencyMap[pais ?? 'US'] || 'USD'
-  
-    return new Intl.NumberFormat(idioma ?? 'en', {
-      style: 'currency',
-      currency,
-      minimumFractionDigits: 0,
-    }).format(valor)
-  }
-  
-  
+  // idioma local → ajusta decimales, coma/punto, etc.
+  const locale = idioma === 'es' ? 'es-MX' : 'en-US'
+
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+    currencyDisplay: 'symbol', // 🔄 puedes usar 'code' si prefieres USD/MXN
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(valor)
+}

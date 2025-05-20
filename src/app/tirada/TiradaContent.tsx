@@ -248,6 +248,7 @@ export default function TiradaContent() {
       <div className="max-w-md mx-auto text-center p-6">
         <div className="mb-6">
         <ProgresoDiario
+          key={idioma}
           tiradasCompletadas={progreso.tiradasCompletadas}
           totalAcciones={10}
           montoGanado={progreso.tiradasCompletadas * rewardValue * 17} 
