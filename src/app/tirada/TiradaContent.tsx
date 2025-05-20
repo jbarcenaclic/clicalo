@@ -14,6 +14,8 @@ import AccionFrame from '@/components/AccionFrame'
 import TiradaCompletada from '@/components/TiradaCompletada'
 import { MetaAlcanzada } from '@/components/MetaAlcanzada'
 import { ResumenCobro } from '@/components/ResumenCobro'
+import { textos } from '@/i18n/texts'
+import { usePaisIdioma } from '@/hooks/usePaisIdioma'
 
 
 
@@ -36,6 +38,7 @@ export default function TiradaContent() {
   const [transitioning, setTransitioning] = useState(false)
   const [showBienvenida, setShowBienvenida] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
+  const { idioma } = usePaisIdioma()
 
 
   useEffect(() => {
@@ -90,7 +93,7 @@ export default function TiradaContent() {
         return
       }
       setRewardValue(action.payout_estimado || 0.035)
-      setMessage(`✅ Acción ${action.orden} de 3 completada`)
+      setMessage(textos[idioma].mensajeAccionCompletada(action.orden))
     } catch (e) {
       console.error('[tirada] error en cargarSiguienteAccion:', e)
     }
@@ -190,18 +193,17 @@ export default function TiradaContent() {
   
 
   function generarMensajeCompartir() {
-    const base = '¡Ya completé mis 10 tiradas de hoy en CLÍCALO! 💰'
-  
     if (progreso?.rachaDias && progreso.rachaDias >= 3) {
-      return `🔥 Llevo ${progreso.rachaDias} días seguidos ganando en CLÍCALO. ¡Súmate tú también!`
+      return textos[idioma].compartirRacha(progreso.rachaDias)
     }
   
     if (progreso?.totalSemanal && progreso.totalSemanal >= 0.5) {
-      return `💸 Esta semana gané $${progreso.totalSemanal.toFixed(2)} en CLÍCALO solo por hacer clics.`
+      return textos[idioma].compartirGanancia(progreso.totalSemanal)
     }
   
-    return base
+    return textos[idioma].compartirBase
   }
+  
 
   const compartirProgreso = () => {
     if (navigator.share) {
@@ -211,10 +213,10 @@ export default function TiradaContent() {
         url: window.location.href,
       }).catch((err) => {
         console.error('Error al compartir:', err)
-        alert('No se pudo compartir. Intenta copiar el link manualmente.')
+        alert(textos[idioma].compartirError)         // al fallar navigator.share
       })
     } else {
-      alert('Tu dispositivo no soporta compartir directamente. Puedes copiar el enlace manualmente 😉')
+      alert(textos[idioma].compartirNoSoportado)   // si no soportado
     }
   }
   const tiradasRestantes = progreso.tiradasCompletadas < 10
@@ -225,14 +227,13 @@ export default function TiradaContent() {
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <Dialog.Panel className="mx-auto max-w-md rounded-lg bg-white p-6 text-center shadow-xl">
-            <Dialog.Title className="text-2xl font-bold text-clicalo-azul mb-2">🎉 ¡Bienvenido!</Dialog.Title>
-            <p className="text-gray-700 mb-4">
-              Hoy puedes ganar hasta <strong>$0.045 USD por acción</strong>.<br />
-              ¡Haz tus 10 tiradas y acumula racha!
-            </p>
-            <button onClick={() => setShowBienvenida(false)} className="bg-yellow-400 text-black px-4 py-2 rounded font-semibold">
-              ¡Vamos!
-            </button>
+          <Dialog.Title className="text-2xl font-bold text-clicalo-azul mb-2">
+            {textos[idioma].bienvenidaTitulo}
+          </Dialog.Title>
+          <p className="text-gray-700 mb-4" dangerouslySetInnerHTML={{ __html: textos[idioma].bienvenidaTexto }} />
+          <button onClick={() => setShowBienvenida(false)} className="bg-yellow-400 text-black px-4 py-2 rounded font-semibold">
+            {textos[idioma].bienvenidaBoton}
+          </button>
           </Dialog.Panel>
         </div>
       </Dialog>

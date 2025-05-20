@@ -13,15 +13,22 @@ export async function GET(req: NextRequest) {
   const user_id = req.cookies.get('user_id')?.value
   if (!user_id) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
-  const { data, error } = await supabase
+    const { data, error } = await supabase
     .from('users')
-    .select('phone')
+    .select('phone, pais, idioma_preferido')
     .eq('id', user_id)
     .single()
 
   if (error || !data) {
+    if (error) console.error('Supabase error:', error.message)
     return NextResponse.json({ error: 'No se encontró el usuario' }, { status: 404 })
   }
 
-  return NextResponse.json({ user_id, phone: data.phone })
+  return NextResponse.json({
+    user_id,
+    phone: data.phone,
+    pais: data.pais,
+    idioma_preferido: data.idioma_preferido,
+  })
+  
 }
