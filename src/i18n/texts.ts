@@ -18,8 +18,8 @@ export const textos = {
       stats: '85% tasa de finalización · $0.045 USD por acción',
       irATirada: 'Ir a mi tirada',
       bienvenidaTitulo: '🎉 ¡Bienvenido!',
-      bienvenidaTexto: 'Hoy puedes ganar hasta <strong>$0.045 USD por acción</strong>.<br />¡Haz tus 10 tiradas y acumula racha!',
-      bienvenidaBoton: '¡Vamos!',
+      bienvenidaTexto: (valor: number, pais: string, idioma: string) =>
+        `Hoy puedes ganar hasta <strong>${formatCurrency(valor, pais, idioma)} por acción</strong>.<br />¡Haz tus 10 tiradas y acumula racha!`,      bienvenidaBoton: '¡Vamos!',
       mensajeAccionCompletada: (orden: number) => `✅ Acción ${orden} de 3 completada`,
       compartirBase: '¡Ya completé mis 10 tiradas de hoy en CLÍCALO! 💰',
       compartirRacha: (dias: number) => `🔥 Llevo ${dias} días seguidos ganando en CLÍCALO. ¡Súmate tú también!`,
@@ -28,7 +28,6 @@ export const textos = {
       compartirNoSoportado: 'Tu dispositivo no soporta compartir directamente. Puedes copiar el enlace manualmente 😉',
       progresoHoy: 'Hoy puedes ganar hasta:',
       progresoAvance: (hechas: number, total: number) => `Avance de tu día: ${hechas} de ${total} acciones completadas`,
-      progresoGanado: (monto: number) => `+$${monto.toFixed(0)}`,
       cobroHasAcumulado: 'Has acumulado',
       cobroPodrasCobrar: (umbral: number, restante: number) => `Podrás cobrar al llegar a $${umbral} • Te faltan $${restante}`,
       cobroSaldoProceso: 'Saldo en proceso',
@@ -53,7 +52,7 @@ export const textos = {
       stats: '85% completion rate · $0.045 USD per action',
       irATirada: 'Go to my turn',
       bienvenidaTitulo: '🎉 Welcome!',
-      bienvenidaTexto: 'Today you can earn up to <strong>$0.045 USD per action</strong>.<br />Complete your 10 turns and keep your streak!',
+      bienvenidaTexto: (valor: number, pais: string, idioma: string) =>`Today you can earn up to <strong>${formatCurrency(valor, pais, idioma)} per action</strong>.<br />Complete your 10 turns and keep your streak!`,
       bienvenidaBoton: 'Let’s go!',
       mensajeAccionCompletada: (orden: number) => `✅ Action ${orden} of 3 completed`,
       compartirBase: 'I just finished my 10 daily turns on CLÍCALO! 💰',
@@ -63,7 +62,6 @@ export const textos = {
       compartirNoSoportado: 'Your device does not support sharing. Copy the link manually 😉',
       progresoHoy: 'Today you can earn up to:',
       progresoAvance: (hechas: number, total: number) => `Your daily progress: ${hechas} of ${total} actions completed`,
-      progresoGanado: (monto: number) => `+$${monto.toFixed(0)}`,
       cobroHasAcumulado: 'You have accumulated',
       cobroPodrasCobrar: (umbral: number, restante: number) => `You can withdraw at $${umbral} • $${restante} to go`,
       cobroSaldoProceso: 'Pending balance',
@@ -72,4 +70,53 @@ export const textos = {
       cobroBotonDeshabilitado: (restante: number) => `You can’t withdraw yet. You need $${restante} more`,
     },
   }
+
+  export function getCurrencyLabel(pais: string | null): string {
+    switch (pais) {
+      case 'MX': return 'MXN'
+      case 'US': return 'USD'
+      case 'CO': return 'COP'
+      case 'BR': return 'BRL'
+      default: return 'USD'
+    }
+  }
+  export function getCurrencySymbol(pais: string | null): string {
+    switch (pais) {
+      case 'MX': return '$'
+      case 'US': return '$'
+      case 'CO': return '$'
+      case 'BR': return 'R$'
+      case 'CL': return '$'
+      case 'AR': return '$'
+      case 'PE': return 'S/'
+      case 'PH': return '₱'
+      default: return '$'
+    }
+  }
+
+  export function formatCurrency(
+    valor: number,
+    pais: string | null = 'US',
+    idioma: string | null = 'en'
+  ): string {
+    const currencyMap: Record<string, string> = {
+      MX: 'MXN',
+      US: 'USD',
+      CO: 'COP',
+      BR: 'BRL',
+      CL: 'CLP',
+      AR: 'ARS',
+      PE: 'PEN',
+      PH: 'PHP',
+    }
+  
+    const currency = currencyMap[pais ?? 'US'] || 'USD'
+  
+    return new Intl.NumberFormat(idioma ?? 'en', {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: 0,
+    }).format(valor)
+  }
+  
   

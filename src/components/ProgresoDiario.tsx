@@ -1,13 +1,16 @@
 // src/components/ProgresoDiario.tsx
 'use client'
+import { formatCurrency, textos } from '@/i18n/texts'
 import { usePaisIdioma } from '@/hooks/usePaisIdioma'
-import { textos } from '@/i18n/texts'
+
+
+
 
 type Props = {
   tiradasCompletadas: number
   totalAcciones: number
-  montoGanado: number // en MXN
-  metaDiaria: number  // en MXN
+  montoGanado: number
+  metaDiaria: number 
 }
 
 export default function ProgresoDiario({
@@ -16,7 +19,8 @@ export default function ProgresoDiario({
   montoGanado,
   metaDiaria,
 }: Props) {
-  const { idioma } = usePaisIdioma()
+  const { idioma, pais } = usePaisIdioma()
+
 
   const puntos = Array.from({ length: totalAcciones }).map((_, i) => (
     <div
@@ -29,11 +33,13 @@ export default function ProgresoDiario({
     <div className="bg-white p-4 rounded-xl shadow border text-center mb-4">
       <p className="font-semibold text-gray-700 mb-2">
         {textos[idioma].progresoHoy}{' '}
-        <span className="font-bold text-black">${metaDiaria.toFixed(0)} MXN</span>
+        <span className="font-bold text-black">
+          {formatCurrency(metaDiaria, pais, idioma)}
+        </span>
       </p>
       <div className="flex justify-center items-center mb-2">{puntos}</div>
       <p className="text-green-600 font-bold text-lg">
-        {textos[idioma].progresoGanado(montoGanado)}
+        {formatCurrency(montoGanado, pais, idioma)}
       </p>
       <p className="text-sm text-gray-600 mt-2">
         {textos[idioma].progresoAvance(tiradasCompletadas, totalAcciones)}

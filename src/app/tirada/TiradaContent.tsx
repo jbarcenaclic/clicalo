@@ -38,7 +38,7 @@ export default function TiradaContent() {
   const [transitioning, setTransitioning] = useState(false)
   const [showBienvenida, setShowBienvenida] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
-  const { idioma } = usePaisIdioma()
+  const { idioma, pais } = usePaisIdioma()
 
 
   useEffect(() => {
@@ -227,13 +227,18 @@ export default function TiradaContent() {
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <Dialog.Panel className="mx-auto max-w-md rounded-lg bg-white p-6 text-center shadow-xl">
-          <Dialog.Title className="text-2xl font-bold text-clicalo-azul mb-2">
-            {textos[idioma].bienvenidaTitulo}
-          </Dialog.Title>
-          <p className="text-gray-700 mb-4" dangerouslySetInnerHTML={{ __html: textos[idioma].bienvenidaTexto }} />
-          <button onClick={() => setShowBienvenida(false)} className="bg-yellow-400 text-black px-4 py-2 rounded font-semibold">
-            {textos[idioma].bienvenidaBoton}
-          </button>
+            <Dialog.Title className="text-2xl font-bold text-clicalo-azul mb-2">
+              {textos[idioma].bienvenidaTitulo}
+            </Dialog.Title>
+            <p
+              className="text-gray-700 mb-4"
+              dangerouslySetInnerHTML={{
+                __html: textos[idioma].bienvenidaTexto(rewardValue, pais ?? 'US', idioma),
+              }}
+            />
+            <button onClick={() => setShowBienvenida(false)} className="bg-yellow-400 text-black px-4 py-2 rounded font-semibold">
+              {textos[idioma].bienvenidaBoton}
+            </button>
           </Dialog.Panel>
         </div>
       </Dialog>
@@ -245,7 +250,7 @@ export default function TiradaContent() {
         <ProgresoDiario
           tiradasCompletadas={progreso.tiradasCompletadas}
           totalAcciones={10}
-          montoGanado={progreso.tiradasCompletadas * rewardValue * 17} // Ejemplo con tipo de cambio a MXN
+          montoGanado={progreso.tiradasCompletadas * rewardValue * 17} 
           metaDiaria={10 * rewardValue * 17}
         />
         </div>

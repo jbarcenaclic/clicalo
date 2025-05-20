@@ -1,6 +1,6 @@
 'use client'
 import { usePaisIdioma } from '@/hooks/usePaisIdioma'
-import { textos } from '@/i18n/texts'
+import { textos, formatCurrency } from '@/i18n/texts'
 
 type PropsResumen = {
   acumulado: number
@@ -9,7 +9,8 @@ type PropsResumen = {
 }
 
 export function ResumenCobro({ acumulado, saldoProceso, umbral }: PropsResumen) {
-  const { idioma } = usePaisIdioma()
+  const { idioma, pais } = usePaisIdioma()
+
   const restante = Math.max(umbral - acumulado, 0)
   const puedeCobrar = acumulado >= umbral
 
@@ -17,12 +18,12 @@ export function ResumenCobro({ acumulado, saldoProceso, umbral }: PropsResumen) 
     <div className="bg-white p-4 rounded-xl shadow border text-center mt-6">
       <div className="mb-2">
         <p className="text-lg font-semibold text-clicalo-azul">{textos[idioma].cobroHasAcumulado}</p>
-        <p className="text-2xl font-bold text-green-600">${acumulado.toFixed(0)} MXN</p>
+        <p className="text-2xl font-bold text-green-600">{formatCurrency(acumulado, pais, idioma)}</p>
         <p className="text-sm text-gray-600">{textos[idioma].cobroPodrasCobrar(umbral, restante)}</p>
       </div>
       <div className="mb-2">
         <p className="text-sm font-medium text-gray-700">{textos[idioma].cobroSaldoProceso}</p>
-        <p className="text-base text-gray-900">${saldoProceso.toFixed(0)} MXN</p>
+        <p className="text-base text-gray-900">{formatCurrency(saldoProceso, pais, idioma)}</p>
         <p className="text-xs text-gray-500">{textos[idioma].cobroSaldoValidando}</p>
       </div>
       <button
