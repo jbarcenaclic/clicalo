@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "check-textos": "tsx scripts/check-textos.ts",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
@@ -45,6 +46,7 @@
     "tailwindcss": "^3.4.17",
     "ts-jest": "^29.3.2",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.4",
     "typescript": "^5.x"
   }
 }

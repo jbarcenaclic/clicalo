@@ -97,7 +97,7 @@ export default function TiradaContent() {
     } catch (e) {
       console.error('[tirada] error en cargarSiguienteAccion:', e)
     }
-  }, [])
+  }, [idioma])
 
   const iniciarTirada = useCallback(async (uid: string) => {
     if (progreso.tiradasCompletadas >= 10) {
