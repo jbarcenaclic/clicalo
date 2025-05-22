@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import PrimaryButton from '@/components/PrimaryButton'
 
-export default function BloqueadoPage() {
+export default function BlockedPage() {
   const router = useRouter()
 
   const handleRetry = () => {

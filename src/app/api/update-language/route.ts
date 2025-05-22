@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
   const { error } = await supabase
     .from('users')
-    .update({ idioma_preferido: idioma })
+    .update({ preferred_language: idioma })
     .eq('id', user_id)
 
   if (error) {

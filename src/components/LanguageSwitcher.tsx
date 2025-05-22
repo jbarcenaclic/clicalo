@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { usePaisIdioma } from '@/hooks/usePaisIdioma'
+import { useLanguageCountry } from '@/hooks/useLanguageCountry'
 
 export default function LanguageSwitcher() {
-  const { idioma, setIdioma } = usePaisIdioma()
+  const { language, setLanguage } = useLanguageCountry()
   const [open, setOpen] = useState(false)
 
   const options = [
@@ -12,14 +12,14 @@ export default function LanguageSwitcher() {
     { code: 'en', label: 'ENG', flag: '🇺🇸' },
   ] as const
 
-  const current = options.find(opt => opt.code === idioma)!
+  const current = options.find(opt => opt.code === language)!
 
   return (
     <div className="relative text-white text-sm">
       <button
         className="flex items-center gap-1 px-2 py-1 hover:bg-zinc-800 rounded"
         onClick={() => setOpen(!open)}
-        aria-label="Seleccionar idioma"
+        aria-label="Seleccionar language"
       >
         <span>{current.flag}</span>
         <span>{current.label}</span>
@@ -33,7 +33,7 @@ export default function LanguageSwitcher() {
               key={opt.code}
               className="flex items-center gap-2 px-3 py-1 w-full text-left hover:bg-zinc-700"
               onClick={() => {
-                setIdioma(opt.code)
+                setLanguage(opt.code)
                 setOpen(false)
               }}
             >

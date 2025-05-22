@@ -1,27 +1,22 @@
 // src/i18n/texts.ts
 
-export const textos = {
+export const texts = {
   es: {
     titulo: 'Convierte tu tiempo digital en recompensas reales.',
-    comoFunciona: '¿Cómo funciona?',
-    pasos: [
-      'Realiza acciones como ver anuncios o responder encuestas',
-      'Recibe tus recompensas en efectivo cada mes, fácil y seguro',
-      'No descargas nada. Funciona directo desde tu navegador',
-      'No necesitas cuenta de banco ni dar tus datos personales',
-    ],
+    mainDescription: (value: number, country: string, language: string) =>
+      `Con solo 20 minutos en tu celular, obtén hasta · ${formatCurrency(value, country, language)} diarios ($1,200 al mes)`,
     placeholder: 'Tu número (ej. +52(55)1234-5678)',
-    boton: 'Empieza ya!',
+    boton: 'Comienza ahora!',
     mensaje: 'Pon tu número y listo!',
-    cargando: 'Cargando...',
-    registrados: '+1,000 usuarios registrados',
-    stats: (valor: number, pais: string, idioma: string) =>
-      `85% tasa de finalización · ${formatCurrency(valor, pais, idioma)} por acción`,
+    loading: 'Cargando...',
+    registered: '+1,000 usuarios registrados',
+    stats: (value: number, country: string, language: string) =>
+      `85% tasa de finalización · ${formatCurrency(value, country, language)} por acción`,
     
-    irATirada: 'Ir a mi tirada',
+    goToTask : 'Ir a mi tarea diaria',
     bienvenidaTitulo: '🎉 ¡Bienvenido!',
-    bienvenidaTexto: (valor: number, pais: string, idioma: string) =>
-      `Hoy puedes ganar hasta <strong>${formatCurrency(valor, pais, idioma)} por acción</strong>.<br />¡Haz tus 10 tiradas y acumula racha!`,      bienvenidaBoton: '¡Vamos!',
+    bienvenidaTexto: (value: number, country: string, language: string) =>
+      `Hoy puedes ganar hasta <strong>${formatCurrency(value, country, language)} por acción</strong>.<br />¡Haz tus 10 tiradas y acumula racha!`,      bienvenidaBoton: '¡Vamos!',
     mensajeAccionCompletada: (orden: number) => `✅ Acción ${orden} de 3 completada`,
     compartirBase: '¡Ya completé mis 10 tiradas de hoy en CLÍCALO! 💰',
     compartirRacha: (dias: number) => `🔥 Llevo ${dias} días seguidos ganando en CLÍCALO. ¡Súmate tú también!`,
@@ -39,24 +34,19 @@ export const textos = {
   },
   en: {
     titulo: 'Turn your screen time into real rewards.',
-    comoFunciona: 'How it works',
-    pasos: [
-      'Complete tasks like watching ads or taking surveys',
-      'Get paid monthly in cash, fast and safe',
-      'No downloads. Works directly in your browser',
-      'No bank account or personal info required',
-    ],
+    mainDescription: (value: number, country: string, language: string) =>
+      `Only 20 on your phone can get you up to · ${formatCurrency(value, country, language)} daily ($150 monthly)`,
     placeholder: 'Your number (e.g. +1(123)456-7890',
     boton: 'Get started!',
     mensaje: 'Enter your number to begin!',
-    cargando: 'Loading...',
-    registrados: '+1,000 registered users',
-    stats: (valor: number, pais: string, idioma: string) =>
-      `85% completion rate · ${formatCurrency(valor, pais, idioma)} per action`,
+    loading: 'Loading...',
+    registered: '+1,000 registered users',
+    stats: (value: number, country: string, language: string) =>
+      `85% completion rate · ${formatCurrency(value, country, language)} per action`,
     
-    irATirada: 'Go to my turn',
+    goToTask: 'Go to my task',
     bienvenidaTitulo: '🎉 Welcome!',
-    bienvenidaTexto: (valor: number, pais: string, idioma: string) =>`Today you can earn up to <strong>${formatCurrency(valor, pais, idioma)} per action</strong>.<br />Complete your 10 turns and keep your streak!`,
+    bienvenidaTexto: (value: number, country: string, language: string) =>`Today you can earn up to <strong>${formatCurrency(value, country, language)} per action</strong>.<br />Complete your 10 turns and keep your streak!`,
     bienvenidaBoton: 'Let’s go!',
     mensajeAccionCompletada: (orden: number) => `✅ Action ${orden} of 3 completed`,
     compartirBase: 'I just finished my 10 daily turns on CLÍCALO! 💰',
@@ -75,8 +65,8 @@ export const textos = {
   },
 }
 
-export function getCurrencyLabel(pais: string | null): string {
-  switch (pais) {
+export function getCurrencyLabel(country: string | null): string {
+  switch (country) {
     case 'MX': return 'MXN'
     case 'US': return 'USD'
     case 'CO': return 'COP'
@@ -85,8 +75,8 @@ export function getCurrencyLabel(pais: string | null): string {
   }
 }
 
-export function getCurrencySymbol(pais: string | null): string {
-  switch (pais) {
+export function getCurrencySymbol(country: string | null): string {
+  switch (country) {
     case 'MX': return '$'
     case 'US': return '$'
     case 'CO': return '$'
@@ -100,9 +90,9 @@ export function getCurrencySymbol(pais: string | null): string {
 }
 
 export function formatCurrency(
-  valor: number,
-  pais: string | null = 'US',
-  idioma: string | null = 'en'
+  value: number,
+  country: string | null = 'US',
+  language: string | null = 'en'
 ): string {
   const currencyMap: Record<string, string> = {
     MX: 'MXN',
@@ -115,10 +105,10 @@ export function formatCurrency(
     PH: 'PHP',
   }
 
-  const currency = currencyMap[pais ?? 'US'] || 'USD'
+  const currency = currencyMap[country ?? 'US'] || 'USD'
 
-  // idioma local → ajusta decimales, coma/punto, etc.
-  const locale = idioma === 'es' ? 'es-MX' : 'en-US'
+  // language local → ajusta decimales, coma/punto, etc.
+  const locale = language === 'es' ? 'es-MX' : 'en-US'
 
   return new Intl.NumberFormat(locale, {
     style: 'currency',
@@ -126,5 +116,5 @@ export function formatCurrency(
     currencyDisplay: 'symbol', // 🔄 puedes usar 'code' si prefieres USD/MXN
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(valor)
+  }).format(value)
 }

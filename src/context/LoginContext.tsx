@@ -8,7 +8,8 @@ type LoginContextType = {
   isLoggedIn: boolean
   userId: string | null
   phone: string | null
-  idioma_preferido: 'es' | 'en' | null
+  country: string | null
+  preferred_language: 'es' | 'en' | null
   setUserId: (id: string | null) => void
   logout: () => void
 }
@@ -18,15 +19,17 @@ const LoginContext = createContext<LoginContextType>({
   isLoggedIn: false,
   userId: null,
   phone: null,
+  country: null,
   setUserId: () => {},
   logout: () => {},
-  idioma_preferido: null,
+  preferred_language: null,
 })
 
 export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
   const [userId, setUserId] = useState<string | null>(null)
   const [phone, setPhone] = useState<string | null>(null)
-  const [idiomaPreferido, setIdiomaPreferido] = useState<'es' | 'en' | null>(null)
+  const [country, setCountry] = useState<string | null>(null)
+  const [PreferredLanguage, setPreferredLanguage] = useState<'es' | 'en' | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -37,12 +40,15 @@ export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
         if (res.ok) {
           setUserId(json.user_id)
           setPhone(json.phone)
-          setIdiomaPreferido(json.idioma_preferido)
+          setPreferredLanguage(json.preferred_language)
+          setCountry(json.country)
         }
       } catch (err) {
         console.error('Login error:', err)
         setUserId(null)
         setPhone(null)
+        setPreferredLanguage(null)
+        setCountry(null)
       }
     }
 
@@ -61,7 +67,8 @@ export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
       isLoggedIn: !!userId,
       userId,
       phone,
-      idioma_preferido: idiomaPreferido,
+      country,
+      preferred_language: PreferredLanguage,
       setUserId,
       logout,
     }}>

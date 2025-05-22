@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
     const { data, error } = await supabase
     .from('users')
-    .select('phone, pais, idioma_preferido')
+    .select('phone, country, preferred_language')
     .eq('id', user_id)
     .single()
 
@@ -27,8 +27,8 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     user_id,
     phone: data.phone,
-    pais: data.pais,
-    idioma_preferido: data.idioma_preferido,
+    country: data.country,
+    preferred_language: data.preferred_language,
   })
   
 }

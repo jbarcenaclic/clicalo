@@ -6,8 +6,6 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "check-textos": "tsx scripts/check-textos.ts",
-    "check-monedas": "tsx src/scripts/check-monedas.ts",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
