@@ -2,19 +2,22 @@
 'use client'
 import { useState, useEffect } from 'react'
 import PageContainer from '@/components/PageContainer'
-import Link from 'next/link'
 import PrimaryButton from '@/components/PrimaryButton'
 import { useLogin } from '@/context/LoginContext'
 import { texts } from '@/i18n/texts'
 import { useLanguageCountry } from '@/hooks/useLanguageCountry'
 import { getGeolocation } from '@/utils/getGeolocation'
-
-
+import { supabase } from '@/lib/supabaseClient'
+import { useRouter } from 'next/navigation'
+import type { Route } from 'next'
 
 export default function Home() {
+  
   const [phone, setPhone] = useState('')
   const [loading, setLoading] = useState(false)
   const { language, setLanguage, country, setCountry } = useLanguageCountry()
+  const [error, setError] = useState('')
+  const router = useRouter()
   const rewardBase = 0.045
 
   useEffect(() => {
@@ -36,30 +39,64 @@ export default function Home() {
 
   const { isLoggedIn } = useLogin()
 
-  const handleLogin = async () => {
-    if (!phone) return alert('Pon tu número y listo!')
-    setLoading(true)
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+  
+    // Limpiar el número de teléfono
+    const cleanedPhone = phone.replace(/\D/g, '');
+  
+    // Validar que se haya ingresado un número
+    if (!cleanedPhone) {
+      setError('Por favor, ingresa tu número de teléfono.');
+      setLoading(false);
+      return;
+    }
+  
+    // Validar longitud mínima
+    if (cleanedPhone.length < 10) {
+      setError('Número de teléfono demasiado corto. Debe tener al menos 10 dígitos.');
+      setLoading(false);
+      return;
+    }
+  
+    // Validar formato E.164
+    const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+    if (!phoneRegex.test(cleanedPhone)) {
+      setError('Número de teléfono inválido. Usa el formato E.164 (ej: +5212345678901).');
+      setLoading(false);
+      return;
+    }
+  
     try {
-      const res = await fetch('/api/login-phone', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone }),
-        credentials: 'include', // 🧠 importante para recibir la cookie
-      })
-      if (res.ok) {
-        window.location.href = '/tirada?bienvenida=1'
+      // Verificar si el usuario ya existe
+      const { data, error: supabaseError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('phone', cleanedPhone)
+        .single();
+  
+      if (supabaseError && supabaseError.code !== 'PGRST116') {
+        setError('Error al verificar el usuario.');
+        setLoading(false);
+        return;
+      }
+  
+      if (data) {
+        // Usuario existente, redirigir a /tasks
+        router.push('/tasks' as Route);
       } else {
-        const data = await res.json()
-        alert(`❌ Error: ${data.error}`)
+        // Usuario nuevo, redirigir a la página de registro
+        router.push(`/register?phone=${encodeURIComponent(cleanedPhone)}` as Route);
       }
     } catch (err) {
-      alert('❌ Error inesperado')
-      console.log(err)
+      setError('Ocurrió un error inesperado. Por favor, intenta de nuevo.' + (err instanceof Error ? `: ${err.message}` : ''));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
-
+  };
+  
   return (
     <PageContainer>
       <div className="absolute top-4 right-4 flex gap-2">
@@ -88,6 +125,7 @@ export default function Home() {
       {!isLoggedIn && (
         <div className="text-center mb-10">
           <p className="mb-2 text-lg text-clicalo-grisTexto">{texts[language].mensaje}</p>
+          {error && <p className="text-red-500 mt-2">{error}</p>}
           <div className="flex flex-col sm:flex-row justify-center items-center gap-2 mb-4">
             <input
               type="tel"
@@ -97,27 +135,17 @@ export default function Home() {
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault()
-                  handleLogin()
+                  handleSubmit(e)
                 }
               }}
               disabled={loading}
               className="p-2 rounded border w-64 text-black disabled:opacity-50 disabled:cursor-not-allowed"
             />
-            <PrimaryButton onClick={handleLogin} disabled={loading}>
+            <PrimaryButton onClick={handleSubmit} disabled={loading}>
               {loading ? texts[language].loading : texts[language].boton}
             </PrimaryButton>
           </div>
         </div>
-      )}
-
-      {isLoggedIn && (
-        <section className="text-center">
-          <p className="mb-2 text-lg text-clicalo-grisTexto">{texts[language].registered}</p>
-          <p className="mb-6 text-lg text-clicalo-grisTexto">{texts[language].stats(rewardBase, country ?? 'MX', language)}</p>
-          <Link href="/tirada">
-            <PrimaryButton>{texts[language].goToTask}</PrimaryButton>
-          </Link>
-        </section>
       )}
     </PageContainer>
   )
