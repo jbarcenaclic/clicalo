@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useLoginContext } from '@/context/LoginContext'
-import { texts } from '@/src/i18n/texts'
+import { useEffect, useState, useCallback } from 'react'
+import { useLogin} from '@/context/LoginContext'
+import { texts } from '@/i18n/texts'
 import { cn } from '@/lib/utils'
 
 type Task = {
@@ -14,18 +14,20 @@ type Task = {
 }
 
 export default function TasksPage() {
-  const { user } = useLoginContext()
+  const { preferred_language } = useLogin()
+  const t = texts[preferred_language || 'es'] // fallback to 'es'
+  const { userId } = useLogin()
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
 
-  const loadTasks = async () => {
+  const loadTasks = useCallback(async () => {
     const res = await fetch('/api/tasks/today', {
-      headers: { 'x-user-id': user?.id },
+      headers: { 'x-user-id': userId || '' },
     })
     const data = await res.json()
     setTasks(data)
     setLoading(false)
-  }
+  }, [userId])	
 
   const markTaskCompleted = async (taskId: string) => {
     await fetch(`/api/tasks/${taskId}/complete`, { method: 'POST' })
@@ -33,10 +35,10 @@ export default function TasksPage() {
   }
 
   useEffect(() => {
-    if (user) loadTasks()
-  }, [user])
+    if (userId) loadTasks()
+  }, [userId, loadTasks])
 
-  if (loading) return <p>{texts.loading}</p>
+  if (loading) return <p>{t.loading}</p>
 
   const activeTask = tasks.find((t) => t.status === 'pending')
 
@@ -44,7 +46,7 @@ export default function TasksPage() {
     <div className="max-w-md mx-auto space-y-4 p-4">
       {/* Progreso visual */}
       <div className="grid grid-cols-5 gap-1">
-        {tasks.map((task, i) => (
+        {tasks.map((task) => (
           <div
             key={task.id}
             className={cn(
@@ -70,11 +72,11 @@ export default function TasksPage() {
             onClick={() => markTaskCompleted(activeTask.id)}
             className="w-full bg-green-600 text-white rounded py-2 font-semibold"
           >
-            {texts.markAsCompleted}
+            {t.markAsCompleted}
           </button>
         </div>
       ) : (
-        <p>{texts.allTasksCompleted}</p>
+        <p>{t.allTasksCompleted}</p>
       )}
     </div>
   )

@@ -48,7 +48,6 @@ export const texts = {
     placeholder: 'Tu número (ej. +52(55)1234-5678)',
     boton: 'Comienza ahora!',
     mensaje: 'Pon tu número y listo!',
-    loading: 'Cargando...',
     registered: '+1,000 usuarios registrados',
     stats: (value: number, country: string, language: string) =>
       `85% tasa de finalización · ${formatCurrency(value, country, language)} por acción`,
@@ -94,7 +93,6 @@ export const texts = {
     placeholder: 'Your number (e.g. +1(123)456-7890',
     boton: 'Get started!',
     mensaje: 'Enter your number to begin!',
-    loading: 'Loading...',
     registered: '+1,000 registered users',
     stats: (value: number, country: string, language: string) =>
       `85% completion rate · ${formatCurrency(value, country, language)} per action`,
