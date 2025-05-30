@@ -3,8 +3,13 @@
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
+import { useLogin } from '@/context/LoginContext'
+import { texts } from '@/i18n/texts'
 
 export default function RegisterPage() {
+  const [modal, setModal] = useState<'terms' | 'privacy' | null>(null)
+  const { preferred_language } = useLogin()
+  const t = texts[preferred_language || 'es'] // fallback to 'es'
   const [name, setName] = useState('')
   const [accepted, setAccepted] = useState(false)
   const [error, setError] = useState('')
@@ -63,8 +68,23 @@ export default function RegisterPage() {
               required
             />
             <label htmlFor="terms" className="text-blue-800">
-              Acepto los <a href="/legal/terminos" className="underline text-blue-600 hover:text-blue-800">Términos y Condiciones</a> y el <a href="/legal/privacidad" className="underline text-blue-600 hover:text-blue-800">Aviso de Privacidad</a> de CLÍCALO.
+              {t.register_accept_terms_start}
+              <span
+                onClick={() => setModal('terms')}
+                className="underline text-blue-600 cursor-pointer"
+              >
+                {t.register_accept_terms_link_terms}
+              </span>
+              {t.register_accept_terms_middle}
+              <span
+                onClick={() => setModal('privacy')}
+                className="underline text-blue-600 cursor-pointer"
+              >
+                {t.register_accept_terms_link_privacy}
+              </span>
+              {t.register_accept_terms_end}
             </label>
+
           </div>
 
           <button
@@ -79,6 +99,29 @@ export default function RegisterPage() {
           )}
         </form>
       </div>
+      {modal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white text-blue-900 rounded-xl max-w-lg w-full p-6 relative shadow-lg">
+            <button
+              className="absolute top-2 right-3 text-sm text-blue-700 underline"
+              onClick={() => setModal(null)}
+            >
+              {t.close}
+            </button>
+            <iframe
+              src={
+                modal === 'terms'
+                  ? `/legal/terms.${preferred_language || 'es'}.html`
+                  : `/legal/privacy.${preferred_language || 'es'}.html`
+              }
+              className="w-full h-[400px] mt-4 rounded border"
+              title="Legal"
+              sandbox="allow-same-origin allow-scripts"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

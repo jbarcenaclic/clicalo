@@ -1,6 +1,7 @@
-// next.config.js
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+// next.config.ts
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
   reactStrictMode: true,
 
   experimental: {
@@ -9,8 +10,16 @@ const nextConfig = {
     typedRoutes: true,
   },
 
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.txt$/,
+      use: 'raw-loader',
+    })
+    return config
+  },
+
   eslint: {
-    ignoreDuringBuilds: true, //!isProd, // evita errores de lint en build de producción
+    ignoreDuringBuilds: true,
   },
 
   images: {
@@ -23,4 +32,4 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+export default nextConfig

@@ -1,0 +1,69 @@
+1. Data Controller
+
+In compliance with the Mexican Federal Law on the Protection of Personal Data Held by Private Parties (LFPDPPP), CLÍCALO is responsible for the processing of your personal data.
+
+Contact Address: Volcán 215, Lomas de Chapultepec, 11000 CDMX, Mexico  
+Contact Email: contacto@clicalo.com
+
+2. Personal Data Collected
+
+CLÍCALO may collect the following personal data directly through the platform:
+
+- Full Name  
+- Mobile Phone Number  
+- Email Address  
+- Platform Usage Data (approximate location, device, IP address, browser)
+
+CLÍCALO does not collect sensitive personal data under any circumstances.
+
+3. Purpose of Data Processing
+
+The collected data will be used exclusively to:
+
+- Create and manage user accounts  
+- Manage incentive and reward activities  
+- Send notifications related to platform programs  
+- Verify authenticity of participation for fraud prevention  
+- Conduct statistical analysis and usage behavior for service improvement  
+- Fulfill applicable legal obligations
+
+4. Data Transfers
+
+CLÍCALO will not sell, transfer, or disclose your personal data to third parties, except in the following cases:
+
+- When required by competent authorities under applicable law  
+- When necessary to comply with legal obligations  
+- To technology service providers contracted by CLÍCALO solely for platform management, under strict confidentiality and security measures
+
+5. Use of Cookies and Tracking Technologies
+
+CLÍCALO uses cookies, web tags, and similar technologies to enhance user experience. These technologies allow:
+
+- Remembering usage preferences  
+- Providing personalized content  
+- Conducting usage statistics
+
+Users may disable cookies through their browser settings. However, this may affect platform functionality.
+
+6. ARCO Rights (Access, Rectification, Cancellation, and Opposition)
+
+Users may at any time exercise their rights to:
+
+- Access their personal data  
+- Rectify incorrect or incomplete data  
+- Cancel data when it is no longer necessary  
+- Object to non-essential uses of their data
+
+To exercise these rights, send a request to contacto@clicalo.com including:
+
+- Full Name  
+- Clear description of the request  
+- Documents proving identity
+
+A response will be provided within 20 business days from receipt of the request.
+
+7. Changes to the Privacy Notice
+
+CLÍCALO reserves the right to modify or update this Privacy Notice at any time. Changes will be made available on the platform and will be considered accepted if the user continues to use the platform.
+
+By using CLÍCALO, you acknowledge that you have read, understood, and fully accepted this Privacy Notice.

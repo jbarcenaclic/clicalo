@@ -21,8 +21,8 @@ export default function Footer() {
         <div>
           <h3 className="font-semibold mb-2">{t.legalTitle}</h3>
           <ul className="space-y-1 text-sm">
-            <li><a href="/legal/terminos" className="hover:underline">{t.terms}</a></li>
-            <li><a href="/legal/privacidad" className="hover:underline">{t.privacy}</a></li>
+            <li><a href="/legal/terms" className="hover:underline">{t.terms}</a></li>
+            <li><a href="/legal/privacy" className="hover:underline">{t.privacy}</a></li>
             <li><a href="/legal/antifraude" className="hover:underline">{t.antifraud}</a></li>
           </ul>
         </div>

@@ -25,42 +25,24 @@ export const texts = {
       rights: "All rights reserved",
     }
   },
-  legal: {
-    terms: {
-      es: {
-        title: "Términos y Condiciones de CLÍCALO",
-        lastUpdate: "Última actualización: Mayo 2025",
-        acceptance: "Aceptación de los Términos",
-        acceptanceText: "Bienvenido a CLÍCALO. Al acceder y utilizar esta plataforma, aceptas de manera expresa e irrevocable los presentes Términos y Condiciones de Uso.",
-        nature: "Naturaleza de la Plataforma y de las Recompensas",
-        natureText: "CLÍCALO es una plataforma de incentivos digitales que permite a los usuarios participar en dinámicas a cambio de recompensas simbólicas.",
-        limits: "Límites de Recompensas y Retiros",
-        limitsText: "Las recompensas están sujetas a un tope máximo de retiro mensual de $7,500 MXN y mínimo de $300 MXN para poder solicitar retiro."
-      },
-      en: {
-        title: "CLÍCALO Terms and Conditions",
-        lastUpdate: "Last update: May 2025",
-        acceptance: "Acceptance of Terms",
-        acceptanceText: "Welcome to CLÍCALO. By accessing and using this platform, you expressly and irrevocably accept these Terms and Conditions of Use.",
-        nature: "Nature of the Platform and Rewards",
-        natureText: "CLÍCALO is a digital incentive platform that allows users to participate in activities in exchange for symbolic rewards.",
-        limits: "Reward and Withdrawal Limits",
-        limitsText: "Rewards are subject to a monthly withdrawal cap of $7,500 MXN and a minimum of $300 MXN to request a payout."
-      }
-    },
-    privacy: {
-      title: "Aviso de Privacidad de CLÍCALO",
-      lastUpdate: "Última actualización: Mayo 2025",
-      responsibility: "Responsable de la Protección de sus Datos Personales",
-      responsibilityText: "...",
-      dataCollected: "Datos Personales Recabados",
-      dataCollectedText: "...",
-      purpose: "Finalidades del Tratamiento de los Datos",
-      purposeText: "..."
-    }
-  },
+  
   es: {
     titulo: 'Convierte tu tiempo digital en recompensas reales.',
+    termsTitle: 'Términos y Condiciones',
+    termsLastUpdate: 'Última actualización: 29 de mayo de 2025',
+    privacyTitle: 'Aviso de Privacidad',
+    privacyLastUpdate: 'Última actualización: 29 de mayo de 2025',
+    register_accept_terms_start: 'Acepto los ',
+    register_accept_terms_link_terms: 'Términos y Condiciones',
+    register_accept_terms_middle: ' y el ',
+    register_accept_terms_link_privacy: 'Aviso de Privacidad',
+    register_accept_terms_end: ' de CLÍCALO.',
+    view_terms: 'Ver Términos y Condiciones',
+    view_privacy: 'Ver Aviso de Privacidad',
+    close: 'Cerrar',
+    loading: 'Cargando...',
+    markAsCompleted: 'Marcar como completada',
+    allTasksCompleted: 'Ya completaste tus 15 tareas de hoy 🎉',
     mainDescription: (value: number, country: string, language: string) =>
       `Con solo 20 minutos en tu celular, obtén hasta · ${formatCurrency(value, country, language)} diarios ($1,200 al mes)`,
     placeholder: 'Tu número (ej. +52(55)1234-5678)',
@@ -92,6 +74,21 @@ export const texts = {
   },
   en: {
     titulo: 'Turn your screen time into real rewards.',
+    termsTitle: 'Terms and Conditions',
+    termsLastUpdate: 'Last updated: May 29, 2025',
+    privacyTitle: 'Privacy Notice',
+    privacyLastUpdate: 'Last updated: May 29, 2025',
+    register_accept_terms_start: 'I accept the ',
+    register_accept_terms_link_terms: 'Terms and Conditions',
+    register_accept_terms_middle: ' and the ',
+    register_accept_terms_link_privacy: 'Privacy Notice',
+    register_accept_terms_end: ' of CLÍCALO.',
+    view_terms: 'View Terms and Conditions',
+    view_privacy: 'View Privacy Notice',
+    close: 'Close',
+    loading: 'loading...',
+    markAsCompleted: 'Mark as completed',
+    allTasksCompleted: 'You have completed your 15 tasks for today 🎉',
     mainDescription: (value: number, country: string, language: string) =>
       `Only 20 on your phone can get you up to · ${formatCurrency(value, country, language)} daily ($150 monthly)`,
     placeholder: 'Your number (e.g. +1(123)456-7890',
