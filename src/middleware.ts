@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export function middleware(request: NextRequest) {
+  // Manejo especial para OPTIONS en /
   if (request.method === 'OPTIONS' && request.nextUrl.pathname === '/') {
     const forwarded = request.headers.get('x-forwarded-for')
     const ip = forwarded?.split(',')[0]?.trim() ?? 'IP desconocida'
@@ -22,6 +23,21 @@ export function middleware(request: NextRequest) {
     })
   }
 
+  // Protección de rutas privadas
+  const accessToken = request.cookies.get('sb-access-token')?.value
+  const protectedRoutes = ['/tasks']
+  const isProtected = protectedRoutes.some((route) =>
+    request.nextUrl.pathname.startsWith(route)
+  )
+
+  if (isProtected && !accessToken) {
+    const loginUrl = new URL('/login', request.url)
+    return NextResponse.redirect(loginUrl)
+  }
+
   return NextResponse.next()
 }
 
+export const config = {
+  matcher: ['/', '/tasks/:path*'], // incluir '/' para el caso de OPTIONS
+}

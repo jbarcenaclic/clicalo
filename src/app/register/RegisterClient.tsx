@@ -10,7 +10,6 @@ export default function RegisterPage() {
   const [modal, setModal] = useState<'terms' | 'privacy' | null>(null)
   const { preferred_language } = useLogin()
   const t = texts[preferred_language || 'es'] // fallback to 'es'
-  const [name, setName] = useState('')
   const [accepted, setAccepted] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
@@ -29,7 +28,7 @@ export default function RegisterPage() {
       return
     }
 
-    const { error } = await supabase.from('users').insert({ phone, name })
+    const { error } = await supabase.from('users').insert({ phone })
 
     if (error) {
       setError('Error al registrar el usuario.')
@@ -45,19 +44,6 @@ export default function RegisterPage() {
         <p className="mb-6">Registrando número: <span className="font-semibold">{phone}</span></p>
 
         <form onSubmit={handleRegister} className="space-y-4">
-          <div>
-            <label htmlFor="name" className="block mb-1 font-semibold">Tu nombre</label>
-            <input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Escribe tu nombre"
-            />
-          </div>
-
           <div className="flex items-start space-x-2 text-sm">
             <input
               type="checkbox"
@@ -84,7 +70,6 @@ export default function RegisterPage() {
               </span>
               {t.register_accept_terms_end}
             </label>
-
           </div>
 
           <button
