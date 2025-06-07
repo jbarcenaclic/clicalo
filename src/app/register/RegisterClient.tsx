@@ -1,3 +1,4 @@
+// src/app/register/RegisterClient.tsx
 'use client'
 
 import { useSearchParams, useRouter } from 'next/navigation'
@@ -9,11 +10,12 @@ import { texts } from '@/i18n/texts'
 export default function RegisterPage() {
   const [modal, setModal] = useState<'terms' | 'privacy' | null>(null)
   const { preferred_language } = useLogin()
-  const t = texts[preferred_language || 'es'] // fallback to 'es'
+  const t = texts[preferred_language || 'es']
   const [accepted, setAccepted] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
   const searchParams = useSearchParams()
+
   if (!searchParams) {
     return <p>Error: No se pudo obtener el número de teléfono.</p>
   }
@@ -22,24 +24,54 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-
+  
     if (!accepted) {
       setError('⚠️ Debes aceptar los Términos y Condiciones antes de continuar.')
       return
     }
 
-    const { error } = await supabase.from('users').insert({ phone })
+    const isDev = process.env.NODE_ENV !== 'production'
 
-    if (error) {
-      setError('Error al registrar el usuario.')
-    } else {
-      router.push('/tasks')
+    if (isDev) {
+      const response = await fetch('/api/dev-create-otp', {
+        method: 'POST',
+        body: JSON.stringify({ phone }),
+        headers: { 'Content-Type': 'application/json' },
+      })
+    
+      if (!response.ok) {
+        console.error('❌ Error simulando OTP:', await response.text())
+        setError('Error simulando OTP')
+        return
+      }
+    
+      console.log('✅ OTP simulado correctamente')
     }
+  
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        phone,
+        options: { shouldCreateUser: true }
+      })
+      
+      if (error) {
+        console.warn('OTP error (ignorado en dev):', error.message)
+      }
+    } catch (err) {
+      console.error('Error inesperado:', err)
+    }
+  
+    router.push(`/verify?phone=${encodeURIComponent(phone)}`)
   }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-white px-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 text-blue-900">
+        {process.env.NODE_ENV !== 'production' && (
+          <div className="mb-4 text-sm text-yellow-700 bg-yellow-100 border border-yellow-300 rounded p-3 text-center">
+            ⚠️ Estás en <strong>modo desarrollo</strong>. El registro y verificación se simulan con un OTP <strong>fijo: 123456</strong>.
+          </div>
+        )}
         <h1 className="text-2xl font-bold mb-4">¡Bienvenido a CLÍCALO! 🎉</h1>
         <p className="mb-6">Registrando número: <span className="font-semibold">{phone}</span></p>
 
