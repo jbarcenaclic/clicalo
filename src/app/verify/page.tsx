@@ -66,3 +66,6 @@ export default function VerifyPage() {
     </div>
   )
 }
+
+// 👇 Esto previene el error en Vercel
+export const dynamic = 'force-dynamic'
