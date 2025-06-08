@@ -29,7 +29,7 @@ export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
   const [userId, setUserId] = useState<string | null>(null)
   const [phone, setPhone] = useState<string | null>(null)
   const [country, setCountry] = useState<string | null>(null)
-  const [PreferredLanguage, setPreferredLanguage] = useState<'es' | 'en' | null>(null)
+  const [preferredLanguage, setPreferredLanguage] = useState<'es' | 'en' | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -37,6 +37,7 @@ export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         const res = await fetch('/api/user-info', { credentials: 'include' })
         const json = await res.json()
+        if (!res.ok) throw new Error('No autorizado')
         if (res.ok) {
           setUserId(json.user_id)
           setPhone(json.phone)
@@ -68,7 +69,7 @@ export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
       userId,
       phone,
       country,
-      preferred_language: PreferredLanguage,
+      preferred_language: preferredLanguage,
       setUserId,
       logout,
     }}>

@@ -15,17 +15,21 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { error } = await supabase.rpc('insert_otp_simulado', {
+    const { data, error } = await supabase.rpc('insert_otp_simulado', {
       p_phone: phone,
       p_otp_code: otp_code
     })
 
-    if (error) throw error
+    if (error) {
+      console.error('❌ Supabase RPC error:', data, error)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
 
+    console.log('✅ OTP simulado insertado correctamente')
     return NextResponse.json({ success: true, phone, otp_code })
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error'
-    console.error('Error inserting OTP:', errorMessage)
+    console.error('Error inesperado al insertar OTP:', errorMessage)
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }

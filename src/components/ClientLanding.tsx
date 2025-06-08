@@ -1,3 +1,4 @@
+// src/components/ClientLanding.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -9,9 +10,10 @@ import { useLanguageCountry } from '@/hooks/useLanguageCountry'
 import { getGeolocation } from '@/utils/getGeolocation'
 import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
+import PhoneInputAdvanced from '@/components/PhoneInputAdvanced'
 
 export default function ClientLanding() {
-  const [phone, setPhone] = useState('')
+  const [phone, setPhone] = useState<string | undefined>()
   const [loading, setLoading] = useState(false)
   const { language, setLanguage, country, setCountry } = useLanguageCountry()
   const [error, setError] = useState('')
@@ -41,15 +43,14 @@ export default function ClientLanding() {
     setLoading(true)
     setError('')
 
-    const cleanedPhone = phone.replace(/\D/g, '')
-    if (!cleanedPhone || cleanedPhone.length < 10) {
-      setError('Número de teléfono inválido.')
+    if (!phone || !phone.startsWith('+')) {
+      setError('Número en formato E.164 inválido. Debe iniciar con + y código de país.')
       setLoading(false)
       return
     }
 
     const phoneRegex = /^\+?[1-9]\d{1,14}$/
-    if (!phoneRegex.test(cleanedPhone)) {
+    if (!phoneRegex.test(phone)) {
       setError('Número en formato E.164 inválido.')
       setLoading(false)
       return
@@ -59,7 +60,7 @@ export default function ClientLanding() {
       const { data, error: supabaseError } = await supabase
         .from('users')
         .select('id')
-        .eq('phone', cleanedPhone)
+        .eq('phone', phone)
         .single()
 
       if (supabaseError && supabaseError.code !== 'PGRST116') {
@@ -70,11 +71,11 @@ export default function ClientLanding() {
       if (data) {
         router.push('/tasks')
       } else {
-        router.push(`/register?phone=${encodeURIComponent(cleanedPhone)}`)
+        router.push(`/register?phone=${encodeURIComponent(phone)}`)
       }
     } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error desconocido'
-        setError(`Ocurrió un error inesperado: ${message}`)
+      const message = err instanceof Error ? err.message : 'Error desconocido'
+      setError(`Ocurrió un error inesperado: ${message}`)
     } finally {
       setLoading(false)
     }
@@ -107,20 +108,20 @@ export default function ClientLanding() {
         <div className="text-center mb-10">
           <p className="mb-2 text-lg text-clicalo-grisTexto">{texts[language].mensaje}</p>
           {error && <p className="text-red-500 mt-2">{error}</p>}
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-2 mb-4">
-            <input
-              type="tel"
-              placeholder={texts[language].placeholder}
+
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col sm:flex-row justify-center items-center gap-2 mb-4 w-full max-w-md mx-auto"
+          >
+            <PhoneInputAdvanced
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
-              disabled={loading}
-              className="p-2 rounded border w-64 text-black disabled:opacity-50"
+              onChange={(value) => setPhone(value?.trim())}
+              label={texts[language].placeholder}
             />
-            <PrimaryButton onClick={handleSubmit} disabled={loading}>
+            <PrimaryButton type="submit" disabled={loading}>
               {loading ? texts[language].loading : texts[language].boton}
             </PrimaryButton>
-          </div>
+          </form>
         </div>
       )}
     </PageContainer>
