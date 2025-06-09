@@ -49,5 +49,3 @@ export type GeoInfo = {
       return null
     }
   }
-  
-  
