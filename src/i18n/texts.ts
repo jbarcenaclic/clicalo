@@ -89,7 +89,7 @@ export const texts = {
     markAsCompleted: 'Mark as completed',
     allTasksCompleted: 'You have completed your 15 tasks for today 🎉',
     mainDescription: (value: number, country: string, language: string) =>
-      `Only 20 on your phone can get you up to · ${formatCurrency(value, country, language)} daily ($150 monthly)`,
+      `Only 20 minutes on your phone can get you up to · ${formatCurrency(value, country, language)} daily ($150 monthly)`,
     placeholder: 'Your number (e.g. +1(123)456-7890',
     boton: 'Get started!',
     mensaje: 'Enter your number to begin!',
